@@ -1,0 +1,52 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+body{
+    height: 100vh;
+    /* background: 
+        radial-gradient(
+        at top right,
+        rgb(46, 0, 0) 0%,
+        #151515 70%,
+        rgb(0, 44, 44) 100%
+      ); */
+    padding: 0;
+    margin: 0;
+    background-color: #0E1113;
+    background-size: 100%, 100%;
+    font-family: 'Roboto';
+    background-repeat: no-repeat;
+}
+
+#text{
+    text-align: center;
+}
+
+.appear{
+    position: absolute;
+    background-color:rgb(32,34,35);
+    border-radius: 20px;
+}
+
+.a{
+    overflow: hidden;
+    background-color: white;
+    color: white;
+}
+
+.box{
+    position: absolute;
+    /* overflow: hidden; */
+    /* background-color: rgb(100,100,100); */
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%,-50%);
+}
+
+#anim{
+    animation-name: appearAnim;
+}
+
+@keyframes appearAnim {
+    0%{opacity:0}
+    100%{opacity:1}
+}
