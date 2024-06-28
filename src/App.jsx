@@ -7,6 +7,7 @@ function App() {
   useEffect(()=>{
     var storedToken = sessionStorage.getItem("chineseWhisperToken");
     if(storedToken) useToken(JSON.parse(storedToken));
+    console.log(JSON.parse(storedToken))
   },[])
   return(
     <BrowserRouter>

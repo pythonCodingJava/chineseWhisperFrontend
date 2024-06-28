@@ -77,6 +77,7 @@ function Forum({ item, token, updateWindow }) {
             item.likes++;
             token.liked.push(item._id);
           }
+          sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
         }
       }
       like = 0;
@@ -99,7 +100,7 @@ function Forum({ item, token, updateWindow }) {
             cursor: "pointer",
           },
         }}
-        style={matches ? { maxWidth: "900px" } : {width:'calc(100vw - 40px)'}}
+        style={matches ? { maxWidth: "900px" } : {width:'calc(100vw - 60px)'}}
         onClick={() => {
           handleclick(item);
         }}
@@ -118,6 +119,9 @@ function Forum({ item, token, updateWindow }) {
               height: 30,
               borderRadius: "50%",
               backgroundColor: "white",
+              display:'flex',
+              justifyContent:'center',
+              alignContent:'center'
             }}
           >
             <Typography
@@ -125,9 +129,8 @@ function Forum({ item, token, updateWindow }) {
                 fontWeight: 900,
                 fontSize: 24,
                 color: "rgb(160,170,180)",
-                position: "relative",
-                top: "-2px",
-                left: "7px",
+                position:'relative',
+                top:'-1px',
                 p: 0,
                 "&:hover": { cursor: "pointer" },
               }}

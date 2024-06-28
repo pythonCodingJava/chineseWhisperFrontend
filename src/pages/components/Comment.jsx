@@ -183,6 +183,8 @@ function Comment({ cmnt, token }) {
                     cmnt.likes++;
                     token.likedcmt.push(cmnt._id);
                   }
+                  
+                  sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
                 }
               }}
             >

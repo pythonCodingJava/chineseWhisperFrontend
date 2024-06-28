@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import AccountTab from "./components/AccountTab";
 import { Router, Routes, Route, BrowserRouter } from "react-router-dom";
@@ -7,23 +7,58 @@ import Login from "./Login";
 import Register from "./Register";
 import AddForum from "./addForum";
 import ViewForum from "./ViewForum";
+import { content } from "../utils/apiRoutes";
 
 const Home = ({ token }) => {
   const [accountTab, setAccountTab] = useState(false);
   const [login, setLogin] = useState();
 
+  const [retrieve, setRetrieve] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    const retrieved = async () => {
+      let body = { date: new Date(), type: 1 };
+      if (data[0]) body = { date: data[0].createdAt, type: -1 };
+      const dat = await fetch(content, {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        setLoading(false);
+        return res.json();
+      });
+      if (!data[0]) setData([...dat.data]);
+      else {
+        dat.data.pop();
+        setData([...dat.data, ...data]);
+      }
+    };
+    retrieved();
+  }, [retrieve]);
+
   return (
     <>
-      <div style={{ position: "absolute", top: "65px", width: "100vw" }}>
+      <div style={{ position: "absolute", top: "65px", width: "100%" }}>
         <Routes>
           <Route
             path="/"
-            element={<MainWindow token={token.token}></MainWindow>}
+            element={<MainWindow data={data} token={token.token}></MainWindow>}
           />
           <Route
             path="/add"
             element={
-              <AddForum token={token.token} setLogin={setLogin} login={login} />
+              <AddForum
+                token={token.token}
+                setRetrieve={setRetrieve}
+                setLogin={setLogin}
+                login={login}
+              />
             }
           />
           <Route
@@ -57,12 +92,14 @@ const Home = ({ token }) => {
         tab={function () {
           setAccountTab(!accountTab);
         }}
+        setRetrieve={setRetrieve}
+        loading={loading}
       ></Navbar>
 
       <div style={{ position: "relative" }}>
         {accountTab ? (
           <>
-            <AccountTab token={token} tab={setAccountTab} />
+            <AccountTab token={token} setAccountTab={setAccountTab} />
           </>
         ) : (
           <></>

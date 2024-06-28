@@ -3,12 +3,12 @@ import { TextareaAutosize, Button, Typography } from "@mui/material";
 import {createURL} from '../utils/apiRoutes';
 import {Navigate} from 'react-router-dom';
 
-function AddForum({token, setLogin, login}) {
+function AddForum({token, setLogin, login, setRetrieve}) {
     const [inputs, setInputs] = useState({
         title:"",
         body:""
     });
-    const [redirect, setRedirect] = useState(false);
+    // const [redirect, setRedirect] = useState(false);
 
     const handleChange = (value)=>{
         const name = value.target.name;
@@ -35,7 +35,7 @@ function AddForum({token, setLogin, login}) {
         }
       }).then((res)=>{
         if(res.status == 201){
-          setRedirect(true);
+          setRetrieve((v)=>!v);
         }
       })
     }
@@ -43,14 +43,16 @@ function AddForum({token, setLogin, login}) {
   return (
     <div
       style={{
-        borderRadius: "20px",
         padding: "25px",
+        maxWidth:"550px",
+        width:"calc(100% - 100px)",
+
         position: "absolute",
         left: "50%",
         transform: "translate(-50%,0%)",
       }}
     >
-      {redirect? <Navigate to="/" />:<></>}
+      {/* {redirect? <Navigate to="/" />:<></>} */}
       <Typography variant="h3" sx={{ color: "rgb(225,230,235)", m: "10px" }}>
         Create Post
       </Typography>
@@ -62,7 +64,7 @@ function AddForum({token, setLogin, login}) {
           color: "rgb(225,230,235)",
           fontSize: "20px",
           height: "40px",
-          width: "550px",
+          width: "100%",
           resize: "none",
           borderRadius: "15px",
           padding: "10px 0px 0px 10px",
@@ -82,7 +84,7 @@ function AddForum({token, setLogin, login}) {
           color: "rgb(225,230,235)",
           fontSize: "18px",
           height: "200px",
-          width: "550px",
+          width: "100%",
           resize: "none",
           borderRadius: "15px",
           padding: "10px 0px 0px 10px",
@@ -100,7 +102,7 @@ function AddForum({token, setLogin, login}) {
           width: "80px",
           backgroundColor: "rgb(200,50,50)",
           marginTop: "15px",
-          marginLeft: "8px",
+          left: "8px",
           borderRadius: "15px",
           "&:hover":{
             backgroundColor: "rgb(230,80,80)"
