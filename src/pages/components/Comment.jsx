@@ -10,13 +10,15 @@ function Comment({ cmnt, token }) {
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
 
+  const [showReplies, setShowReplies] = useState(false);
+
   const postComment = async () => {
     await fetch(addCmnt, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({
         body: replyText,
         tier: cmnt.tier + 1,
-        from: token.Username,
         replyTo: cmnt._id,
         to: cmnt.to,
       }),
@@ -168,7 +170,6 @@ function Comment({ cmnt, token }) {
                     method: "POST",
                     body: JSON.stringify({
                       id: cmnt._id,
-                      user: token.Username,
                     }),
                     headers: {
                       "Content-Type": "application/json",
@@ -183,8 +184,11 @@ function Comment({ cmnt, token }) {
                     cmnt.likes++;
                     token.likedcmt.push(cmnt._id);
                   }
-                  
-                  sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
+
+                  sessionStorage.setItem(
+                    "chineseWhisperToken",
+                    JSON.stringify(token)
+                  );
                 }
               }}
             >
@@ -258,6 +262,25 @@ function Comment({ cmnt, token }) {
               <></>
             )}
           </div>
+          {replies && replies.length>0 ? (
+            <Typography
+              variant="subtitle2"
+              sx={{
+                color: "rgb(150,155,160)",
+                position: "relative",
+                left: "5%",
+                "&:hover":{
+                  cursor:"pointer",
+                  color:'rgb(180,185,190)'
+                }
+              }}
+              onClick={function(){setShowReplies((v)=>!v)}}
+            >
+              {showReplies?'Hide':'Show'} replies ({replies.length})..
+            </Typography>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       {replying ? (
@@ -293,7 +316,7 @@ function Comment({ cmnt, token }) {
         <></>
       )}
 
-      {replies ? (
+      {showReplies && replies ? (
         <>
           {replies.map((cmnt, index) => {
             return <Comment key={index} token={token} cmnt={cmnt} />;

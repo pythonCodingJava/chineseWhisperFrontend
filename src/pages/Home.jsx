@@ -25,6 +25,7 @@ const Home = ({ token }) => {
       if (data[0]) body = { date: data[0].createdAt, type: -1 };
       const dat = await fetch(content, {
         method: "POST",
+        credentials:'include',
         body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",

@@ -17,9 +17,9 @@ function Forum({ item, token, updateWindow }) {
   const postComment = async () => {
     await fetch(addCmnt, {
       method: "POST",
+      credentials:'include',
       body: JSON.stringify({
         body: replyText,
-        from: token.Username,
         tier:1,
         to: item._id,
       }),
@@ -33,7 +33,6 @@ function Forum({ item, token, updateWindow }) {
             {
               body: replyText,
               tier: 1,
-              from: { Username: token.Username },
               likes: 0,
               to: item._id,
               _id: json.id,
@@ -60,9 +59,9 @@ function Forum({ item, token, updateWindow }) {
         if (token) {
           fetch(likeURL, {
             method: "POST",
+            credentials:'include',
             body: JSON.stringify({
               id: item._id,
-              user: token.Username,
             }),
             headers: {
               "Content-Type": "application/json",
@@ -234,7 +233,7 @@ function Forum({ item, token, updateWindow }) {
               {replying ? "Post" : "Reply"}
             </Button>
 
-          {!token ? (
+          {/* {!token ? (
             <div
               style={{
                 backgroundColor: "rgba(0,0,0,0.75)",
@@ -258,7 +257,7 @@ function Forum({ item, token, updateWindow }) {
             </div>
           ) : (
             <></>
-          )}
+          )} */}
         </div>
         {replying ? (
         <>

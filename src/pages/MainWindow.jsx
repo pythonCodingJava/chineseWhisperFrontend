@@ -6,22 +6,7 @@ import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import Forum from "./components/forum";
 
 function MainWindow({ data, token }) {
-  // const [data, setData] = useState([]);
   const [likedForums, setLikedForums] = useState([]);
-
-  // useEffect(() => {
-  //   const retrieved = async () => {
-  //     const dat = await fetch(content, {
-  //       method: "POST",
-  //       body: JSON.stringify({ date: new Date() }),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     }).then((res) => res.json());
-  //     setData([...dat.data]);
-  //   };
-  //   retrieved();
-  // }, []);
 
   useEffect(() => {
     if (token) {
@@ -31,6 +16,7 @@ function MainWindow({ data, token }) {
 
   return (
     <>
+      {data[0] ? (
         <div
           style={{
             display: "flex",
@@ -52,6 +38,19 @@ function MainWindow({ data, token }) {
             })}
           </div>
         </div>
+      ) : (
+        <div
+          style={{
+            color: "white",
+            fontSize: "60px",
+            left: "50vw",
+            top: "50vh",
+            transform: "translate(-50%,-50%)",
+          }}
+        >
+          ...
+        </div>
+      )}
     </>
   );
 }

@@ -91,6 +91,7 @@ function Login({ func, register, log }) {
   const handleSubmit = () => {
     fetch(login, {
       method: "POST",
+      credentials:'include',
       body: JSON.stringify(inputs),
       headers: { "Content-Type": "application/json" },
     }).then(async (res) => {

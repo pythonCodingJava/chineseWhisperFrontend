@@ -29,6 +29,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
       }
       fetch(createURL, {
         method:"POST",
+        credentials:'include',
         body:JSON.stringify(data),
         headers:{
           "Content-Type":"application/json"

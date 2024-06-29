@@ -106,7 +106,7 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
           </div>
         </Box>
 
-        <TextField
+        {/* <TextField
           placeholder="Search"
           sx={{ maxWidth: "650px", width: "100%", px: "20px" }}
           InputProps={{
@@ -124,7 +124,7 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
         {!token.token ? (
           <Button
             onClick={function () {

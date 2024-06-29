@@ -1,4 +1,4 @@
-const host = "https://chineseserver-4jwzf0ue.b4a.run/";
+const host = "http://localhost:3000/";
 export const register = `${host}auth/register`;
 export const login = `${host}auth/login`;
 export const content = `${host}content`;
@@ -9,3 +9,4 @@ export const getPost = `${host}content/fetch`;
 export const getReplies = `${host}content/replies`
 export const likeCmntURL = `${host}content/action/likecmnt`;
 export const addCmnt = `${host}content/action/comment`;
+export const logoutURL = `${host}content/action/logout`;

@@ -2,14 +2,27 @@ import React, {useState} from "react";
 import { Typography, Box } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Navigate } from "react-router-dom";
+import {logoutURL} from '../../utils/apiRoutes'
 
 function AccountTab({ token, setAccountTab }) {
     const [redirect, setRedirect] = useState(false);
-  const logout = () => {
-    token.setToken(null);
-    sessionStorage.removeItem("chineseWhisperToken");
-    setAccountTab(false);
-    setRedirect(true);
+  const logout = async () => {
+    await fetch(logoutURL, {
+      method:'GET',
+      credentials:'include',
+      headers:{
+        "Content-Type":"application/json"
+      }
+    }).then((res)=>{
+      console.log(res);
+      if(res.status == 201){
+        token.setToken(null);
+        sessionStorage.removeItem("chineseWhisperToken");
+        setAccountTab(false);
+        document.cookie = "uid=;"
+        setRedirect(true);
+      }
+    })
   };
 
   return (
