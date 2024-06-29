@@ -9,4 +9,4 @@ export const getPost = `${host}content/fetch`;
 export const getReplies = `${host}content/replies`
 export const likeCmntURL = `${host}content/action/likecmnt`;
 export const addCmnt = `${host}content/action/comment`;
-export const logout = `${host}content/action/logout`;
+export const logoutURL = `${host}content/action/logout`;
