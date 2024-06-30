@@ -54,10 +54,11 @@ function ViewForum({ token }) {
         >
           {post != null ? (
             <>
+              <title>{post.title}</title>
               <Forum item={post} token={token} updateWindow={setUpdate} />
               <div
                 style={{
-                  width: matches ? 880 : "100%",
+                  width: matches ? 880 : "calc(100%)",
                   backgroundColor: "rgb(18,20,22)",
                   position: "relative",
                   left: matches ? "2%" : "",

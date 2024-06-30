@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Box, Button, TextField } from "@mui/material";
+import { Typography, Box, Button, TextField, useMediaQuery } from "@mui/material";
 import { addCmnt, getReplies, likeCmntURL } from "../../utils/apiRoutes";
 import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 
 function Comment({ cmnt, token }) {
+  const matches = useMediaQuery("(min-width:900px)");
   const [replies, setReplies] = useState();
   const [update, setUpdate] = useState();
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
 
   const [showReplies, setShowReplies] = useState(false);
+  const [loadCmt, setLoadCmt] = useState(false);
 
   const postComment = async () => {
+    setLoadCmt(true);
     await fetch(addCmnt, {
       method: "POST",
       credentials: "include",
@@ -27,9 +30,9 @@ function Comment({ cmnt, token }) {
       },
     }).then((res) => {
       if (res.status == 201) {
+        setLoadCmt(false);
         res.json().then((json) => {
           setReplies([
-            ...replies,
             {
               body: replyText,
               tier: cmnt.tier + 1,
@@ -38,10 +41,14 @@ function Comment({ cmnt, token }) {
               to: cmnt.to,
               _id: json.id,
             },
+            ...replies,
           ]);
         });
       }
     });
+    if (!showReplies) {
+      setShowReplies(true);
+    }
 
     setReplyText("");
     setReplying(false);
@@ -67,12 +74,12 @@ function Comment({ cmnt, token }) {
   return (
     <>
       <div
-        style={{ display: "flex", marginRight: "auto", flexDirection: "row" }}
+        style={{ display: "flex", width:'inherit' ,marginRight: "auto", flexDirection: "row" }}
       >
         <div
           style={{
-            width: 30,
-            height: 30,
+            width: '30px',
+            height: '30px',
             borderRadius: "50%",
             backgroundColor: "white",
             position: "relative",
@@ -85,9 +92,10 @@ function Comment({ cmnt, token }) {
               fontWeight: 900,
               fontSize: 24,
               color: "rgb(160,170,180)",
-              position: "relative",
-              top: "-2px",
-              left: "7px",
+              position:'absolute',
+              top:'17px',
+              left:'14px',
+              transform:'translate(-50%,-50%)',
               p: 0,
               "&:hover": { cursor: "pointer" },
             }}
@@ -101,6 +109,7 @@ function Comment({ cmnt, token }) {
             display: "flex",
             flexDirection: "column",
             position: "relative",
+            width:'inherit',
             marginRight: "auto",
             left: cmnt.tier * 25 - 7,
             paddingBottom: "10px",
@@ -130,17 +139,18 @@ function Comment({ cmnt, token }) {
               {cmnt.from.Username}
             </Typography>
           </div>
-          <Typography
+          <div style={{width: `calc(100% - ${cmnt.tier*25 + 3}px)`}}>
+            <Typography
             variant="subtitle"
             sx={{
-              margin: "2px",
-              marginLeft: "10px",
+              wordBreak:'break-all',
+              marginLeft: "2px",
               color: "rgb(230,235,240)",
             }}
           >
             {cmnt.body}
           </Typography>
-
+          </div>
           <div
             style={{
               display: "flex",
@@ -168,6 +178,7 @@ function Comment({ cmnt, token }) {
                 if (token) {
                   fetch(likeCmntURL, {
                     method: "POST",
+                    credentials: "include",
                     body: JSON.stringify({
                       id: cmnt._id,
                     }),
@@ -262,25 +273,6 @@ function Comment({ cmnt, token }) {
               <></>
             )}
           </div>
-          {replies && replies.length>0 ? (
-            <Typography
-              variant="subtitle2"
-              sx={{
-                color: "rgb(150,155,160)",
-                position: "relative",
-                left: "5%",
-                "&:hover":{
-                  cursor:"pointer",
-                  color:'rgb(180,185,190)'
-                }
-              }}
-              onClick={function(){setShowReplies((v)=>!v)}}
-            >
-              {showReplies?'Hide':'Show'} replies ({replies.length})..
-            </Typography>
-          ) : (
-            <></>
-          )}
         </div>
       </div>
       {replying ? (
@@ -315,6 +307,139 @@ function Comment({ cmnt, token }) {
       ) : (
         <></>
       )}
+      {replies && replies.length > 0 ? (
+        <Typography
+          variant="subtitle2"
+          sx={{
+            color: "rgb(150,155,160)",
+            position: "relative",
+            width: "fit-content",
+            left: `calc(40px + ${cmnt.tier*25 - 7}px)`,
+            top: "-5px",
+            "&:hover": {
+              cursor: "pointer",
+              color: "rgb(180,185,190)",
+            },
+          }}
+          onClick={function () {
+            setShowReplies((v) => !v);
+          }}
+        >
+          {showReplies ? "Hide" : "Show"} replies ({replies.length})..
+        </Typography>
+      ) : (
+        <></>
+      )}
+
+      {loadCmt && <>
+        <div className="blink"
+        style={{ display: "flex", marginRight: "auto", flexDirection: "row" }}
+      >
+        <div
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            backgroundColor: "rgb(200,210,220)",
+            position: "relative",
+            left: (cmnt.tier+1) * 25 - 10,
+            top: 8,
+          }}
+        >
+        </div>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
+            marginRight: "auto",
+            left: (cmnt.tier+1) * 25 - 7,
+            paddingBottom: "10px",
+            paddingTop: "10px",
+            borderRadius: "10px",
+            color: "rgb(230,235,240)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: "3px",
+            }}
+          >
+            <Box
+              sx={{
+                marginLeft: "8px",
+                position: "relative",
+                top: "5px",
+                borderRadius:'8px',
+                fontWeight: 500,
+                height: '18px',
+                width:'100px',
+                bgcolor: "rgb(120,125,130)",
+              }}
+            >
+            </Box>
+          </div>
+          <Box
+            sx={{
+              margin: "2px",
+              marginLeft: "10px",
+              bgcolor: "rgb(220,230,240)",
+              height:'20px',
+              width:'100%',
+              position:'relative',
+              top:'10px',
+              borderRadius:'10px'
+            }}
+          >
+          </Box>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "row",
+              width: "fit-content",
+              position:'relative',
+              top:'10px'
+            }}
+          >
+            <Box
+              sx={{
+                px: 1,
+                py: 0.3,
+                my: 1.3,
+                mx: 0.3,
+                bgcolor: "rgb(60,65,70)",
+                borderRadius: "7px",
+                display: "flex",
+                alignItems: "center",
+                width: "35px",
+                height:'15px',
+                flexDirection: "row",
+              }}
+              
+            >
+            </Box>
+            <Box
+              sx={{
+                bgcolor: "rgb(60,65,70)",
+                borderRadius: "7px",
+                p: "3px",
+                marginLeft: "5px",
+                height:'15px',
+                width:'50px'
+              }}
+            >
+            </Box>
+
+          </div>
+        </div>
+      </div>
+      </>}
 
       {showReplies && replies ? (
         <>

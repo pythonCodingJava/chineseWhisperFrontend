@@ -33,6 +33,7 @@ function Forum({ item, token, updateWindow }) {
             {
               body: replyText,
               tier: 1,
+              from:{ Username: token.Username },
               likes: 0,
               to: item._id,
               _id: json.id,
@@ -66,6 +67,20 @@ function Forum({ item, token, updateWindow }) {
             headers: {
               "Content-Type": "application/json",
             },
+          }).then((res)=>{
+            if(res.status== 401){
+              if (token.liked.includes(item._id)) {
+                setUpdate(!update)
+                item.likes--;
+                token.liked.splice(token.liked.indexOf(item._id), 1);
+              } else {
+                setUpdate(!update)
+                item.likes++;
+                token.liked.push(item._id);
+              }
+              sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
+            
+            }
           });
           if (token.liked.includes(item._id)) {
             setUpdate(!update)
@@ -77,7 +92,8 @@ function Forum({ item, token, updateWindow }) {
             token.liked.push(item._id);
           }
           sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
-        }
+        
+          }
       }
       like = 0;
     }
@@ -99,7 +115,7 @@ function Forum({ item, token, updateWindow }) {
             cursor: "pointer",
           },
         }}
-        style={matches ? { maxWidth: "900px" } : {width:'calc(100vw - 60px)'}}
+        style={matches ? { width: "900px" } : {width:'calc(100vw - 50px)'}}
         onClick={() => {
           handleclick(item);
         }}

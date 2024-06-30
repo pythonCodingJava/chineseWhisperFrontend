@@ -16,6 +16,7 @@ function MainWindow({ data, token }) {
 
   return (
     <>
+      <title>Chinese Whisper</title>
       {data[0] ? (
         <div
           style={{

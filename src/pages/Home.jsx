@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import { React, useEffect, useState, useRef } from "react";
 import Navbar from "./components/Navbar";
 import AccountTab from "./components/AccountTab";
 import { Router, Routes, Route, BrowserRouter } from "react-router-dom";
@@ -17,15 +17,15 @@ const Home = ({ token }) => {
   const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState([]);
+  const initRender = useRef(false);
 
   useEffect(() => {
-    setLoading(true);
     const retrieved = async () => {
       let body = { date: new Date(), type: 1 };
       if (data[0]) body = { date: data[0].createdAt, type: -1 };
       const dat = await fetch(content, {
         method: "POST",
-        credentials:'include',
+        credentials: "include",
         body: JSON.stringify(body),
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +40,13 @@ const Home = ({ token }) => {
         setData([...dat.data, ...data]);
       }
     };
-    retrieved();
+    if (initRender.current || window.location.pathname=='/') {
+      setLoading(true);
+      console.log('retrieving')
+      retrieved();
+    }else {
+      initRender.current = true;
+    }
   }, [retrieve]);
 
   return (
