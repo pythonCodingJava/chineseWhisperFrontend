@@ -233,14 +233,14 @@ function Forum({ item, token, updateWindow }) {
               {replying ? "Post" : "Reply"}
             </Button>
 
-          {/* {!token ? (
+          {!token ? (
             <div
               style={{
                 backgroundColor: "rgba(0,0,0,0.75)",
                 alignContent: "center",
                 textAlign: "right",
                 position: "absolute",
-                width: "130px",
+                width: "140px",
                 height: "30px",
                 borderRadius: "12px",
               }}
@@ -257,7 +257,7 @@ function Forum({ item, token, updateWindow }) {
             </div>
           ) : (
             <></>
-          )} */}
+          )}
         </div>
         {replying ? (
         <>
