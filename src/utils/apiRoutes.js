@@ -1,4 +1,4 @@
-const host = "https://chineseserver-4jwzf0ue.b4a.run/";
+const host = "http://localhost:3000/";
 export const register = `${host}auth/register`;
 export const login = `${host}auth/login`;
 export const content = `${host}content`;
