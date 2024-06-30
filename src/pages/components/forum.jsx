@@ -51,14 +51,14 @@ function Forum({ item, token, updateWindow }) {
   };
 
 
-  const handleclick = (item) => {
+  const handleclick = async (item) => {
     if (like == 0) {
       setRedirect(true);
     } else {
       if (like == 1) {
         console.log("like");
         if (token) {
-          fetch(likeURL, {
+          await fetch(likeURL, {
             method: "POST",
             credentials:'include',
             body: JSON.stringify({

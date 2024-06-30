@@ -89,7 +89,7 @@ function ViewForum({ token }) {
                 }}
                 style={
                   matches
-                    ? { maxWidth: "900px" }
+                    ? { width: "900px" }
                     : { width: "calc(100vw - 60px)" }
                 }
               >
