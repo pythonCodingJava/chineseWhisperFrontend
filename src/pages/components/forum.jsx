@@ -5,7 +5,7 @@ import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import { Navigate } from "react-router-dom";
 
-function Forum({ item, token, updateWindow }) {
+function Forum({ item, token, updateWindow, setLoadCmnt }) {
   const matches = useMediaQuery("(min-width:900px)");
   const [redirect, setRedirect] = useState(false);
   const [update, setUpdate] = useState(false);
@@ -15,6 +15,7 @@ function Forum({ item, token, updateWindow }) {
   let like = 0;
 
   const postComment = async () => {
+    setLoadCmnt(true);
     await fetch(addCmnt, {
       method: "POST",
       credentials:'include',
@@ -28,6 +29,7 @@ function Forum({ item, token, updateWindow }) {
       },
     }).then((res) => {
       if (res.status == 201) {
+        setLoadCmnt(false);
         res.json().then((json) => {
           item.comments.unshift(
             {

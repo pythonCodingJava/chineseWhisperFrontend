@@ -5,12 +5,14 @@ import Forum from "./components/forum";
 import Comment from "./components/Comment";
 import { useMediaQuery, Box, Typography } from "@mui/material";
 import '../styles/forum.css'
+import LoadingComment from "./components/LoadingComment";
 
 function ViewForum({ token }) {
   const { postId } = useParams();
   const [post, setPost] = useState();
   const [failed, setFailed] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [loadCmt, setLoadCmnt] = useState(false);
   const matches = useMediaQuery("(min-width:900px)");
 
   useEffect(() => {
@@ -55,7 +57,7 @@ function ViewForum({ token }) {
           {post != null ? (
             <>
               <title>{post.title}</title>
-              <Forum item={post} token={token} updateWindow={setUpdate} />
+              <Forum item={post} setLoadCmnt={setLoadCmnt} token={token} updateWindow={setUpdate} />
               <div
                 style={{
                   width: matches ? 880 : "calc(100%)",
@@ -67,6 +69,7 @@ function ViewForum({ token }) {
                   borderRadius: "5px 5px 20px 20px",
                 }}
               >
+                {loadCmt && <LoadingComment tier={1} />}
                 {post.comments.map((cmnt, index) => {
                   return <Comment key={index} token={token} cmnt={cmnt} />;
                 })}
