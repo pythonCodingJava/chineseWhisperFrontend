@@ -57,6 +57,17 @@ function Forum({ item, token, updateWindow }) {
     } else {
       if (like == 1) {
         console.log("like");
+        
+        if (token.liked.includes(item._id)) {
+          setUpdate(!update)
+          item.likes--;
+          token.liked.splice(token.liked.indexOf(item._id), 1);
+        } else {
+          setUpdate(!update)
+          item.likes++;
+          token.liked.push(item._id);
+        }
+
         if (token) {
           await fetch(likeURL, {
             method: "POST",
@@ -78,20 +89,11 @@ function Forum({ item, token, updateWindow }) {
                 item.likes++;
                 token.liked.push(item._id);
               }
-              sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
             
             }
+            
+            sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
           });
-          if (token.liked.includes(item._id)) {
-            setUpdate(!update)
-            item.likes--;
-            token.liked.splice(token.liked.indexOf(item._id), 1);
-          } else {
-            setUpdate(!update)
-            item.likes++;
-            token.liked.push(item._id);
-          }
-          sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
         
           }
       }
