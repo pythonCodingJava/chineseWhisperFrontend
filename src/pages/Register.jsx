@@ -183,7 +183,7 @@ function Register({ func , login}) {
           <Typography
             variant="h3"
             align="center"
-            sx={{ color: "rgb(200,200,200)", marginBottom: "20px" }}
+            sx={{ color: "rgb(200,200,200)", fontWeight:700, marginBottom: "20px" }}
           >
             REGISTER
           </Typography>

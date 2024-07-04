@@ -29,6 +29,7 @@ function Login({ func, register, log }) {
 
   const [appear, setAppear] = useState(false);
   const [visible, setVisible] = useState();
+  const [logging, setLogging] = useState(false);
   
   var transition;
 
@@ -88,7 +89,9 @@ function Login({ func, register, log }) {
     setInputs((values) => ({ ...values, [name]: val }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLogging(true);
     fetch(login, {
       method: "POST",
       credentials:'include',
@@ -99,6 +102,7 @@ function Login({ func, register, log }) {
         setInvalid(true);
       }
       if (res.status == 201) {
+        setLogging(false);
         const dat = await res.json().then( (d)=>{
         sessionStorage.setItem("chineseWhisperToken", JSON.stringify(d));
         func(d);
@@ -109,7 +113,7 @@ function Login({ func, register, log }) {
   };
 
   return (
-    <>
+    <form action="handleSubmit">
       {transition
         ? transition((style, item) =>
             item ? (
@@ -202,7 +206,7 @@ function Login({ func, register, log }) {
             onClick={handleSubmit}
             sx={{ my: "10px", height: "45px", width: "100%" }}
           >
-            SIGN IN
+            {logging?<div className="loadAnim"><div className="load">...</div></div>:"SIGN IN"}
           </Button>
         </Box>
 
@@ -236,7 +240,7 @@ function Login({ func, register, log }) {
         </Box>
       </Diiv>
       {/* {!visible?<div className='box' style={{height:dimensions.height, width:dimensions.width}}></div>:<></>} */}
-    </>
+    </form>
   );
 }
 

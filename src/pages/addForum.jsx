@@ -8,6 +8,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
         title:"",
         body:""
     });
+    const [posting, setPosting] = useState(false);
     // const [redirect, setRedirect] = useState(false);
 
     const handleChange = (value)=>{
@@ -27,6 +28,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
         date:new Date(),
         createdBy:token.Username
       }
+      setPosting(true);
       fetch(createURL, {
         method:"POST",
         credentials:'include',
@@ -36,6 +38,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
         }
       }).then((res)=>{
         if(res.status == 201){
+          setPosting(false);
           setRetrieve((v)=>!v);
         }
       })
@@ -101,6 +104,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
         variant="contained"
         sx={{
           width: "80px",
+          height:'40px',
           backgroundColor: "rgb(200,50,50)",
           marginTop: "15px",
           left: "8px",
@@ -111,7 +115,7 @@ function AddForum({token, setLogin, login, setRetrieve}) {
         }}
         onClick={handleSubmit}
       >
-        Post
+        {posting?<div className="loadAnim"><div className="load">...</div></div>:"Post"}
       </Button>
     </div>
   );
