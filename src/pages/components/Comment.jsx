@@ -6,7 +6,6 @@ import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import LoadingComment from "./LoadingComment";
 
 function Comment({ cmnt, token }) {
-  const matches = useMediaQuery("(min-width:900px)");
   const [replies, setReplies] = useState();
   const [update, setUpdate] = useState();
   const [replying, setReplying] = useState(false);
@@ -38,7 +37,7 @@ function Comment({ cmnt, token }) {
               body: replyText,
               tier: cmnt.tier + 1,
               from: { Username: token.Username },
-              likes: 0,
+              likes: [],
               to: cmnt.to,
               _id: json.id,
             },
@@ -187,31 +186,24 @@ function Comment({ cmnt, token }) {
                       "Content-Type": "application/json",
                     },
                   });
-                  if (token.likedcmt.includes(cmnt._id)) {
+                  if (cmnt.likes.includes(token.id)) {
                     setUpdate(!update);
-                    cmnt.likes--;
-                    token.likedcmt.splice(token.likedcmt.indexOf(cmnt._id), 1);
+                    cmnt.likes.splice(cmnt.likes.indexOf(token.id), 1);
                   } else {
                     setUpdate(!update);
-                    cmnt.likes++;
-                    token.likedcmt.push(cmnt._id);
+                    cmnt.likes.push(token.id);
                   }
-
-                  sessionStorage.setItem(
-                    "chineseWhisperToken",
-                    JSON.stringify(token)
-                  );
                 }
               }}
             >
-              {token && token.likedcmt.includes(cmnt._id) ? (
+              {token && cmnt.likes.includes(token.id) ? (
                 <Favourite sx={{ color: "rgb(220,80,80)" }} />
               ) : (
                 <FavouriteBorder
                   sx={{ "&:hover": { color: "rgb(255,100,100)" } }}
                 />
               )}
-              {cmnt.likes > 0 ? (
+              {cmnt.likes.length > 0 ? (
                 <>
                   <Typography
                     variant="subtitle"
@@ -222,7 +214,7 @@ function Comment({ cmnt, token }) {
                       fontWeight: "500",
                     }}
                   >
-                    {cmnt.likes}
+                    {cmnt.likes.length}
                   </Typography>
                 </>
               ) : (

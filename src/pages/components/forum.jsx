@@ -22,7 +22,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
       body: JSON.stringify({
         body: replyText,
         tier:1,
-        to: item._id,
+        to: item._id
       }),
       headers: {
         "Content-Type": "application/json",
@@ -36,7 +36,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
               body: replyText,
               tier: 1,
               from:{ Username: token.Username },
-              likes: 0,
+              likes: [],
               to: item._id,
               _id: json.id,
             }
@@ -60,14 +60,12 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
       if (like == 1) {
         console.log("like");
         
-        if (token.liked.includes(item._id)) {
+        if (item.likes.includes(token.id)) {
           setUpdate(!update)
-          item.likes--;
-          token.liked.splice(token.liked.indexOf(item._id), 1);
+          item.likes.splice(item.likes.indexOf(token.id), 1);
         } else {
           setUpdate(!update)
-          item.likes++;
-          token.liked.push(item._id);
+          item.likes.push(token.id);
         }
 
         if (token) {
@@ -82,14 +80,12 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
             },
           }).then((res)=>{
             if(res.status== 401){
-              if (token.liked.includes(item._id)) {
+              if (item.likes.includes(token.id)) {
                 setUpdate(!update)
-                item.likes--;
-                token.liked.splice(token.liked.indexOf(item._id), 1);
+                item.likes.splice(item.likes.indexOf(token.id), 1);
               } else {
                 setUpdate(!update)
-                item.likes++;
-                token.liked.push(item._id);
+                item.likes.push(token.id);
               }
             
             }
@@ -98,6 +94,13 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
           });
         
           }
+      }
+      if(like == 2){
+        if (!replying || (replying && replyText == ""))
+          setReplying(!replying);
+        else {
+            postComment();
+        }
       }
       like = 0;
     }
@@ -197,7 +200,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
               my: 1.3,
               mx: 0.3,
               bgcolor:
-                token && token.liked.includes(item._id)
+                token && item.likes.includes(token.id)
                   ? "rgb(200,50,50)"
                   : "rgb(30,35,40)",
               borderRadius: "7px",
@@ -209,14 +212,14 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
               like = 1;
             }}
           >
-            {token && token.liked.includes(item._id) ? (
+            {token && item.likes.includes(token.id) ? (
               <Favourite />
             ) : (
               <FavouriteBorder
                 sx={{ "&:hover": { color: "rgb(255,100,100)" } }}
               />
             )}
-            {item.likes > 0 ? (
+            {item.likes.length > 0 ? (
               <>
                 <Typography
                   variant="subtitle"
@@ -227,7 +230,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
                     fontWeight: "500",
                   }}
                 >
-                  {item.likes}
+                  {item.likes.length}
                 </Typography>
               </>
             ) : (
@@ -243,11 +246,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
                 marginLeft: "10px",
               }}
               onClick={function () {
-                if (!replying || (replying && replyText == ""))
-                  setReplying(!replying);
-                else {
-                    postComment();
-                }
+                like = 2;
               }}
             >
               {replying ? "Post" : "Reply"}
