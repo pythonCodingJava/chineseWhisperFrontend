@@ -1,19 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Typography, Box, Button, TextField, useMediaQuery } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Typography,
+  Box,
+  Button,
+  TextField,
+  useMediaQuery,
+} from "@mui/material";
 import { addCmnt, getReplies, likeCmntURL } from "../../utils/apiRoutes";
 import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import LoadingComment from "./LoadingComment";
+import { processTime } from "../../utils/utilities";
 
-function Comment({ cmnt, token }) {
+function Comment({ cmnt, token, path }) {
   const [replies, setReplies] = useState();
   const [update, setUpdate] = useState();
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
 
-  const [showReplies, setShowReplies] = useState(false);
   const [loadCmt, setLoadCmt] = useState(false);
+  const element = useRef(null);
 
+  const highlighted = path.indexOf(cmnt._id) == path.length-1;
+  const [showReplies, setShowReplies] = useState(path.includes(cmnt._id) && !highlighted);
+  
   const postComment = async () => {
     setLoadCmt(true);
     await fetch(addCmnt, {
@@ -69,34 +79,45 @@ function Comment({ cmnt, token }) {
         });
     };
     func();
+    if(highlighted){
+      element.current?.scrollIntoView({behavior:'smooth'});
+    }
   }, []);
 
   return (
     <>
       <div
-        style={{ display: "flex", width:'inherit' ,marginRight: "auto", flexDirection: "row" }}
+        style={{
+          display: "flex",
+          width: "inherit",
+          marginRight: "auto",
+          flexDirection: "row",
+          backgroundColor: highlighted?'rgba(255,255,255,0.05)':''
+        }}
+        ref={element}
       >
         <div
           style={{
-            width: '30px',
-            height: '30px',
+            width: "25px",
+            height: "25px",
             borderRadius: "50%",
             backgroundColor: "white",
             position: "relative",
             left: cmnt.tier * 25 - 10,
             top: 8,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           <Typography
             sx={{
               fontWeight: 900,
-              fontSize: 24,
+              fontSize: 20,
               color: "rgb(160,170,180)",
-              position:'absolute',
-              top:'17px',
-              left:'14px',
-              transform:'translate(-50%,-50%)',
               p: 0,
+              position: "relative",
+              top: "1px",
               "&:hover": { cursor: "pointer" },
             }}
           >
@@ -109,7 +130,7 @@ function Comment({ cmnt, token }) {
             display: "flex",
             flexDirection: "column",
             position: "relative",
-            width:'inherit',
+            width: "inherit",
             marginRight: "auto",
             left: cmnt.tier * 25 - 7,
             paddingBottom: "10px",
@@ -129,27 +150,35 @@ function Comment({ cmnt, token }) {
             <Typography
               sx={{
                 marginLeft: "8px",
-                position: "relative",
-                top: "1.5px",
                 fontWeight: 500,
-                fontSize: 18,
+                fontSize: 16,
                 color: "rgb(200,200,200)",
               }}
             >
               {cmnt.from.Username}
             </Typography>
-          </div>
-          <div style={{width: `calc(100% - ${cmnt.tier*25 + 3}px)`}}>
             <Typography
-            variant="subtitle"
-            sx={{
-              wordBreak:'break-all',
-              marginLeft: "2px",
-              color: "rgb(230,235,240)",
-            }}
-          >
-            {cmnt.body}
-          </Typography>
+              sx={{
+                marginLeft: "8px",
+                fontWeight: 500,
+                fontSize: 15,
+                color: "rgb(200,200,200,0.6)",
+              }}
+            >
+              • {processTime(new Date(), new Date(cmnt.date))}
+            </Typography>
+          </div>
+          <div style={{ width: `calc(100% - ${cmnt.tier * 25 + 3}px)` }}>
+            <Typography
+              variant="subtitle"
+              sx={{
+                wordBreak: "break-all",
+                marginLeft: "2px",
+                color: "rgb(230,235,240)",
+              }}
+            >
+              {cmnt.body}
+            </Typography>
           </div>
           <div
             style={{
@@ -271,6 +300,7 @@ function Comment({ cmnt, token }) {
       {replying ? (
         <>
           <TextField
+              autoFocus
             sx={{
               width: "calc(100% - 80px)",
             }}
@@ -307,7 +337,7 @@ function Comment({ cmnt, token }) {
             color: "rgb(150,155,160)",
             position: "relative",
             width: "fit-content",
-            left: `calc(40px + ${cmnt.tier*25 - 7}px)`,
+            left: `calc(40px + ${cmnt.tier * 25 - 7}px)`,
             top: "-5px",
             "&:hover": {
               cursor: "pointer",
@@ -324,12 +354,14 @@ function Comment({ cmnt, token }) {
         <></>
       )}
 
-      {loadCmt && <LoadingComment tier={cmnt.tier+1} />}
+      {loadCmt && <LoadingComment tier={cmnt.tier + 1} />}
 
       {showReplies && replies ? (
         <>
           {replies.map((cmnt, index) => {
-            return <Comment key={index} token={token} cmnt={cmnt} />;
+            return (
+              <Comment key={index} path={path} token={token} cmnt={cmnt} />
+            );
           })}
         </>
       ) : (

@@ -6,6 +6,7 @@ import "../styles/Register.css";
 import { styled } from "styled-components";
 import { Field, linkStyle, boxstyle } from "../styles/formComponents.jsx";
 import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import { socket } from "../socket.js";
 
 const Diiv = styled.div`
   transition: opacity 0.5s;
@@ -98,13 +99,14 @@ function Login({ func, register, log }) {
       body: JSON.stringify(inputs),
       headers: { "Content-Type": "application/json" },
     }).then(async (res) => {
+      setLogging(false);
       if (res.status == 400) {
         setInvalid(true);
       }
       if (res.status == 201) {
-        setLogging(false);
         const dat = await res.json().then( (d)=>{
         sessionStorage.setItem("chineseWhisperToken", JSON.stringify(d));
+        socket.emit('login', d.id)
         func(d);
         log();
       })

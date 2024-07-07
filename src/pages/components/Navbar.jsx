@@ -7,7 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import styled, { keyframes } from "styled-components";
 import Add from "@mui/icons-material/Add";
 import Login from "../Login";
@@ -15,19 +15,64 @@ import Register from "../Register";
 import Account from "./Account";
 import { Link, Navigate } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
+import Notification from "./Notification";
+import Favorite from "@mui/icons-material/Favorite";
+import ModeComment from "@mui/icons-material/ModeComment";
 
 const Diiv = styled.div`
   transition: opacity 0.5s;
   opacity: ${(props) => (props.$a ? 1 : 0)};
 `;
 
-function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
+function Navbar({
+  tab,
+  token,
+  login,
+  loading,
+  notifTab,
+  setRetrieve,
+  setLogin,
+  likeNotif,
+  cmtNotif
+}) {
   const [appear, setAppear] = useState();
-  // const [login, setLogin] = useState();
   const [register, setRegister] = useState();
   const [redirect, setRedirect] = useState(false);
   const matches = useMediaQuery("(min-width:850px)");
   const ref = useRef(null);
+
+  const [appearLike, setAppearLike] = useState(false);
+  const [appearCmt, setAppearCmt] = useState(false);
+  const initRender = useRef();
+
+  useEffect(()=>{
+    let timeoutId;
+    if(initRender.current){
+      setAppearLike(true);
+      timeoutId = setTimeout(() => {
+      setAppearLike(false);
+    }, 2000);
+
+    }
+    
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  },[likeNotif])
+
+  useEffect(()=>{
+    let timeoutId;
+    if(initRender.current){
+      setAppearCmt(true);
+      timeoutId = setTimeout(() => {
+      setAppearCmt(false);
+    }, 2000);
+
+    } else{
+      initRender.current = true;
+    }
+    // Cleanup function to clear the timeout if the component unmounts
+    return () => clearTimeout(timeoutId);
+  },[cmtNotif])
 
   useEffect(() => {
     if (loading) {
@@ -54,7 +99,7 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
       {redirect ? <Navigate to="/"></Navigate> : <></>}
       <Box
         sx={{
-          height: "65px",
+          height: "58px",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -64,7 +109,7 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
       >
         <Box
           style={{ textDecoration: "none", marginRight: "auto" }}
-          sx={{"&:hover":{cursor:'pointer'}}}
+          sx={{ "&:hover": { cursor: "pointer" } }}
           onClick={function () {
             setRetrieve((v) => !v);
           }}
@@ -81,12 +126,12 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
               style={{
                 float: "left",
                 color: "white",
-                width: "42px",
+                width: "40px",
                 backgroundColor: "rgb(200,50,50)",
                 padding: "10px 8px",
                 textAlign: "center",
                 fontWeight: "900",
-                fontSize: "20px",
+                fontSize: "18px",
                 marginLeft: "5px",
                 borderRadius: "50%",
               }}
@@ -94,11 +139,11 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
               中文
             </div>
             <Typography
-              variant="h4"
               style={{
+                fontSize: "30px",
                 marginLeft: "10px",
                 color: "rgb(215,218,220)",
-                fontWeight: "800",
+                fontWeight: "600",
               }}
             >
               {matches ? "whisper" : ""}
@@ -155,17 +200,66 @@ function Navbar({ tab, token, login, loading, setRetrieve, setLogin }) {
                   alignItems: "center",
                   px: "10px",
                   bgcolor: "rgb(20,25,30)",
-                  borderRadius: "15px",
+                  borderRadius: "25px",
                   marginRight: "10px",
                   color: "rgb(220,225,230)",
                   height: "40px",
-                  "&:hover": { bgcolor: "rgb(30,35,40)", cursor: "pointer" },
+                  "&:hover": { bgcolor: "rgb(40,45,50)", cursor: "pointer" },
                 }}
               >
                 <Add sx={{ width: "30px", height: "30px" }} />
                 <Typography sx={{ paddingRight: "10px" }}>Create</Typography>
               </Box>
             </Link>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {appearLike && <Box
+                sx={{
+                  position: "absolute",
+                  top: "30px",
+                  bgcolor: "rgb(200,50,50)",
+                  borderRadius: "5px",
+                  p: "25px 8px 3px 8px",
+                  zIndex:1
+                }}
+                className="anim"
+              >
+                <Favorite />
+              </Box>}
+              {appearCmt && <Box
+                sx={{
+                  position: "absolute",
+                  top: "30px",
+                  bgcolor: "rgb(50,150,200)",
+                  borderRadius: "5px",
+                  p: "25px 8px 3px 8px",
+                  zIndex:1
+                }}
+                className="anim"
+              >
+                <ModeComment />
+              </Box>}
+
+              <Box
+                sx={{
+                  bgcolor: "rgb(20,25,30)",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  "&:hover": {
+                    bgcolor: "rgb(40,45,50)",
+                    cursor: "pointer",
+                  },
+                  zIndex:2
+                }}
+                onClick={notifTab}
+              >
+                <NotificationsIcon />
+
+              </Box>
+            </div>
             <div style={{ marginRight: "15px" }}>
               <Account onClick={tab} token={token.token} />
             </div>

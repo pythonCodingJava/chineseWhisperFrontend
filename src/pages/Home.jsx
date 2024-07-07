@@ -1,16 +1,17 @@
 import { React, useEffect, useState, useRef } from "react";
 import Navbar from "./components/Navbar";
 import AccountTab from "./components/AccountTab";
-import { Router, Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import MainWindow from "./MainWindow";
-import Login from "./Login";
-import Register from "./Register";
 import AddForum from "./addForum";
 import ViewForum from "./ViewForum";
 import { content } from "../utils/apiRoutes";
+import Notification from "./components/Notification";
+import { socket } from "../socket";
 
 const Home = ({ token }) => {
   const [accountTab, setAccountTab] = useState(false);
+  const [notifTab, setNotifTab] = useState(false);
   const [login, setLogin] = useState();
 
   const [retrieve, setRetrieve] = useState(false);
@@ -18,6 +19,27 @@ const Home = ({ token }) => {
 
   const [data, setData] = useState([]);
   const initRender = useRef(false);
+
+  const [notifications, setNotifications] = useState(new Map());
+  const order = useRef(new Array());
+  const [likeNotif, setLikeNotif] = useState(false);
+  const [cmtNotif, setCmtNotif] = useState(false);
+
+  useEffect(() => {
+    if (!initRender.current) {
+      console.log("starting");
+
+      socket.on("notify", function (arg) {
+        console.log(arg);
+        if(arg.type == 'like') setLikeNotif((v) => !v);
+        else setCmtNotif((v)=>!v);
+        if (order.current.includes(arg.id))
+          order.current.splice(order.current.indexOf(arg.id), 1);
+        order.current.unshift(arg.id);
+        setNotifications(notifications.set(arg.id, arg));
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const retrieved = async () => {
@@ -40,18 +62,18 @@ const Home = ({ token }) => {
         setData([...dat.data, ...data]);
       }
     };
-    if (initRender.current || window.location.pathname=='/') {
+    if (initRender.current || window.location.pathname == "/") {
       setLoading(true);
-      console.log('retrieving')
+      console.log("retrieving");
       retrieved();
-    }else {
+    } else {
       initRender.current = true;
     }
   }, [retrieve]);
 
   return (
     <>
-      <div style={{ position: "absolute", top: "65px", width: "100%" }}>
+      <div style={{ position: "absolute", top: "58px", width: "100%" }}>
         <Routes>
           <Route
             path="/"
@@ -75,7 +97,7 @@ const Home = ({ token }) => {
         </Routes>
       </div>
 
-      {accountTab ? (
+      {accountTab || notifTab ? (
         <div
           style={{
             width: "100%",
@@ -86,6 +108,7 @@ const Home = ({ token }) => {
           }}
           onClick={function () {
             setAccountTab(false);
+            setNotifTab(false);
           }}
         ></div>
       ) : (
@@ -95,21 +118,31 @@ const Home = ({ token }) => {
       <Navbar
         token={token}
         login={login}
+        cmtNotif={cmtNotif}
+        likeNotif={likeNotif}
         setLogin={setLogin}
         tab={function () {
-          setAccountTab(!accountTab);
+          setAccountTab((v) => !v);
+          setNotifTab(false);
+        }}
+        notifTab={() => {
+          setNotifTab((v) => !v);
+          setAccountTab(false);
         }}
         setRetrieve={setRetrieve}
         loading={loading}
       ></Navbar>
 
       <div style={{ position: "relative" }}>
-        {accountTab ? (
-          <>
-            <AccountTab token={token} setAccountTab={setAccountTab} />
-          </>
-        ) : (
-          <></>
+        {accountTab && (
+          <AccountTab token={token} setAccountTab={setAccountTab} />
+        )}
+        {notifTab && (
+          <Notification
+            setTab={setNotifTab}
+            order={order}
+            notifications={notifications}
+          />
         )}
       </div>
     </>

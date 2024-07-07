@@ -1,9 +1,16 @@
 import React, { useState } from "react";
-import { likeURL,addCmnt } from "../../utils/apiRoutes";
-import { Typography, TextField, Button, useMediaQuery, Box } from "@mui/material";
+import { likeURL, addCmnt } from "../../utils/apiRoutes";
+import {
+  Typography,
+  TextField,
+  Button,
+  useMediaQuery,
+  Box,
+} from "@mui/material";
 import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import { Navigate } from "react-router-dom";
+import { processTime } from "../../utils/utilities";
 
 function Forum({ item, token, updateWindow, setLoadCmnt }) {
   const matches = useMediaQuery("(min-width:900px)");
@@ -18,11 +25,11 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
     setLoadCmnt(true);
     await fetch(addCmnt, {
       method: "POST",
-      credentials:'include',
+      credentials: "include",
       body: JSON.stringify({
         body: replyText,
-        tier:1,
-        to: item._id
+        tier: 1,
+        to: item._id,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -31,75 +38,71 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
       if (res.status == 201) {
         setLoadCmnt(false);
         res.json().then((json) => {
-          item.comments.unshift(
-            {
-              body: replyText,
-              tier: 1,
-              from:{ Username: token.Username },
-              likes: [],
-              to: item._id,
-              _id: json.id,
-            }
-            );
-            
-    updateWindow((v)=>!v);
+          item.comments.unshift({
+            body: replyText,
+            tier: 1,
+            from: { Username: token.Username },
+            likes: [],
+            to: item._id,
+            _id: json.id,
+          });
+
+          updateWindow((v) => !v);
         });
       }
     });
 
     setReplyText("");
     setReplying(false);
-    
   };
-
 
   const handleclick = async (item) => {
     if (like == 0) {
-      setRedirect(true);
+      if(!replying) setRedirect(true);
     } else {
       if (like == 1) {
         console.log("like");
-        
+
         if (item.likes.includes(token.id)) {
-          setUpdate(!update)
+          setUpdate(!update);
           item.likes.splice(item.likes.indexOf(token.id), 1);
         } else {
-          setUpdate(!update)
+          setUpdate(!update);
           item.likes.push(token.id);
         }
 
         if (token) {
           await fetch(likeURL, {
             method: "POST",
-            credentials:'include',
+            credentials: "include",
             body: JSON.stringify({
               id: item._id,
             }),
             headers: {
               "Content-Type": "application/json",
             },
-          }).then((res)=>{
-            if(res.status== 401){
+          }).then((res) => {
+            if (res.status == 401) {
               if (item.likes.includes(token.id)) {
-                setUpdate(!update)
+                setUpdate(!update);
                 item.likes.splice(item.likes.indexOf(token.id), 1);
               } else {
-                setUpdate(!update)
+                setUpdate(!update);
                 item.likes.push(token.id);
               }
-            
             }
-            
-            sessionStorage.setItem("chineseWhisperToken", JSON.stringify(token));
+
+            sessionStorage.setItem(
+              "chineseWhisperToken",
+              JSON.stringify(token)
+            );
           });
-        
-          }
+        }
       }
-      if(like == 2){
-        if (!replying || (replying && replyText == ""))
-          setReplying(!replying);
+      if (like == 2) {
+        if (!replying || (replying && replyText == "")) setReplying(!replying);
         else {
-            postComment();
+          postComment();
         }
       }
       like = 0;
@@ -107,7 +110,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
   };
   return (
     <>
-      {redirect ? <Navigate to={`/forum/${item._id}`} /> : <></>}
+      {redirect ? <Navigate to={`/forum/${item._id}?path=`} /> : <></>}
       <Box
         sx={{
           color: "white",
@@ -122,9 +125,9 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
             cursor: "pointer",
           },
         }}
-        style={matches ? { width: "900px" } : {width:'calc(100vw - 50px)'}}
+        style={matches ? { width: "900px" } : { width: "calc(100vw - 50px)" }}
         onClick={() => {
-          handleclick(item);
+           handleclick(item);
         }}
       >
         <div
@@ -137,23 +140,23 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
         >
           <div
             style={{
-              width: 30,
-              height: 30,
+              width: 25,
+              height: 25,
               borderRadius: "50%",
               backgroundColor: "white",
-              display:'flex',
-              justifyContent:'center',
-              alignContent:'center'
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center",
             }}
           >
             <Typography
               sx={{
                 fontWeight: 900,
-                fontSize: 24,
+                fontSize: 20,
                 color: "rgb(160,170,180)",
-                position:'relative',
-                top:'-1px',
                 p: 0,
+                position: "relative",
+                top: "-1px",
                 "&:hover": { cursor: "pointer" },
               }}
             >
@@ -164,11 +167,21 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
             sx={{
               marginLeft: "8px",
               fontWeight: 500,
-              fontSize: 18,
+              fontSize: 16,
               color: "rgb(200,200,200)",
             }}
           >
             {item.createdBy.Username}
+          </Typography>
+          <Typography
+            sx={{
+              marginLeft: "8px",
+              fontWeight: 500,
+              fontSize: 15,
+              color: "rgb(200,200,200,0.6)",
+            }}
+          >
+            • {processTime(new Date(), new Date(item.createdAt))}
           </Typography>
         </div>
         <div>
@@ -238,19 +251,19 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
             )}
           </Box>
           <Button
-              sx={{
-                color: replying ? "rgb(240,250,255)" : "rgb(150,155,160)",
-                bgcolor: replying ? "rgb(70,70,200)" : "rgb(30,35,40)",
-                borderRadius: "5px",
-                p: "3px",
-                marginLeft: "10px",
-              }}
-              onClick={function () {
-                like = 2;
-              }}
-            >
-              {replying ? "Post" : "Reply"}
-            </Button>
+            sx={{
+              color: replying ? "rgb(240,250,255)" : "rgb(150,155,160)",
+              bgcolor: replying ? "rgb(70,70,200)" : "rgb(30,35,40)",
+              borderRadius: "5px",
+              p: "3px",
+              marginLeft: "10px",
+            }}
+            onClick={function () {
+              like = 2;
+            }}
+          >
+            {replying ? "Post" : "Reply"}
+          </Button>
 
           {!token ? (
             <div
@@ -279,40 +292,39 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
           )}
         </div>
         {replying ? (
-        <>
-          <TextField
-            sx={{
-              width: "calc(100% - 20px)",
-            }}
-            value={replyText}
-            onChange={function (val) {
-              setReplyText(val.target.value);
-            }}
-            InputProps={{
-              style: {
-                borderRadius: "20px",
-                color: "rgb(220,225,230)",
-                position: "relative",
-                backgroundColor: "rgb(50,55,60)",
-                top: "0",
-                marginLeft:"20px",
-                height: "50px",
-                border: "none",
-              },
-              
-            }}
-            onKeyDown={function (event) {
+          <>
+            <TextField
+              autoFocus
+              sx={{
+                width: "calc(100% - 20px)",
+              }}
+              value={replyText}
+              onChange={function (val) {
+                setReplyText(val.target.value);
+              }}
+              InputProps={{
+                style: {
+                  borderRadius: "20px",
+                  color: "rgb(220,225,230)",
+                  position: "relative",
+                  backgroundColor: "rgb(50,55,60)",
+                  top: "0",
+                  marginLeft: "20px",
+                  height: "50px",
+                  border: "none",
+                },
+              }}
+              onKeyDown={function (event) {
                 if (event.key == "Enter") {
                   postComment();
                 }
               }}
-          />
-        </>
-      ) : (
-        <></>
-      )}
+            />
+          </>
+        ) : (
+          <></>
+        )}
       </Box>
-      
     </>
   );
 }

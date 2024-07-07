@@ -35,7 +35,7 @@ function MainWindow({ data, token }) {
             }}
           >
             {data.map((item, index) => {
-              return <Forum key={index} item={item} token={token} />;
+              return <Forum key={index} item={item} updateWindow={function(){}} setLoadCmnt={function(){}} token={token} />;
             })}
           </div>
         </div>
