@@ -70,16 +70,16 @@ function Notification({ notifications, setTab, order }) {
               alignItems: "center",
               "&:hover": {
                 cursor: "pointer",
-                bgcolor: 
-                item.type == "like"
-                ? "rgba(250,50,50,0.2)"
-                : item.type == "comment"
-                ? "rgba(50,150,250,0.2)"
-                : "",
+                bgcolor:
+                  item.type == "like"
+                    ? "rgba(250,50,50,0.2)"
+                    : item.type == "comment"
+                    ? "rgba(50,150,250,0.2)"
+                    : "",
               },
             }}
             onClick={function () {
-              if (item.liking == "post") setUrl(`/forum/${item.id}`);
+              if (item.liking == "post") setUrl(`/forum/${item.id}?path=`);
               else {
                 handleCmtPath(item.id);
               }
@@ -87,7 +87,12 @@ function Notification({ notifications, setTab, order }) {
           >
             <div
               style={{
-                backgroundColor: item.type=='comment'?"rgb(50,100,150)":item.type=='like'?'rgb(180,50,50)':'',
+                backgroundColor:
+                  item.type == "comment"
+                    ? "rgb(50,100,150)"
+                    : item.type == "like"
+                    ? "rgb(180,50,50)"
+                    : "",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
@@ -97,11 +102,21 @@ function Notification({ notifications, setTab, order }) {
                 margin: "10px",
               }}
             >
-              {item.type=='like'&&<Favourite sx={{ color: "rgb(220,230,240)" }} />}
-              {item.type=='comment'&&<ModeCommentIcon sx={{ color: "rgb(220,230,240,1)" }} />}
+              {item.type == "like" && (
+                <Favourite sx={{ color: "rgb(220,230,240)" }} />
+              )}
+              {item.type == "comment" && (
+                <ModeCommentIcon sx={{ color: "rgb(220,230,240,1)" }} />
+              )}
             </div>
             <Typography sx={{ color: "rgb(240,245,250)", width: "250px" }}>
-              {item.type=='like'?`${item.user} and ${item.likes - 1} others liked your ${item.liking} `:`${item.user} ${item.commenting=='post'?'said':'replied'} "${item.body}" on your ${item.commenting} `}
+              {item.type == "like"
+                ? `${item.user} and ${item.likes - 1} others liked your ${
+                    item.liking
+                  } `
+                : `${item.user} ${
+                    item.commenting == "post" ? "said" : "replied"
+                  } "${item.body}" on your ${item.commenting} `}
               "<b>{item.title}</b>"
             </Typography>
           </Box>
