@@ -8,6 +8,7 @@ import ViewForum from "./ViewForum";
 import { content } from "../utils/apiRoutes";
 import Notification from "./components/Notification";
 import { socket } from "../socket";
+import { Typography, useMediaQuery } from "@mui/material";
 
 const Home = ({ token }) => {
   const [accountTab, setAccountTab] = useState(false);
@@ -25,6 +26,8 @@ const Home = ({ token }) => {
   const [likeNotif, setLikeNotif] = useState(false);
   const [cmtNotif, setCmtNotif] = useState(false);
 
+  const matches = useMediaQuery('(min-width:500px)')
+
   const [updateToken, setUpdateToken] = useState({index:-1, item:{}});
 
   useEffect(()=>{
@@ -37,52 +40,19 @@ const Home = ({ token }) => {
   },[token.token==null])
 
   // useEffect(()=>{
-  //   if(initRender.current && token.token){
-  //     token.token.notifications = [];
-  //     order.current.forEach((item,index)=>{
-  //       token.setToken((prev)=>{
-  //         let temp = prev;
-  //         temp.notifications.push(item);
-  //         return temp;
-  //       })
+  //   console.log(token);
+  //   const item = updateToken.item;
+  //   const index = updateToken.index;
+  //   if(token.token){
+  //     token.setToken((prev)=>{
+  //       let temp = prev;
+  //       if(index!=-1)temp.notifications.splice(index,1);
+  //       temp.notifications.unshift(item);
+  //       return temp;
   //     })
-  //     sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token));
+  //     sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
   //   }
-  //   console.log(token.token?.notifications);
-  // },[order.current])
-
-
-  const updateSessionToken = (item,index)=>{
-    console.log(token);
-    if(token.token){
-      token.setToken((prev)=>{
-        let temp = prev;
-        temp.notifications.splice(index,1);
-        temp.notifications.unshift(item);
-        return temp;
-      })
-      // token.token.notifications.splice(index, 1);
-      // token.token.notifications.unshift(item);
-      sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
-    }
-  }
-
-  useEffect(()=>{
-    console.log(token);
-    const item = updateToken.item;
-    const index = updateToken.index;
-    if(token.token){
-      token.setToken((prev)=>{
-        let temp = prev;
-        if(index!=-1)temp.notifications.splice(index,1);
-        temp.notifications.unshift(item);
-        return temp;
-      })
-      // token.token.notifications.splice(index, 1);
-      // token.token.notifications.unshift(item);
-      sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
-    }
-  },[updateToken])
+  // },[updateToken])
 
   useEffect(() => {
     if (!initRender.current) {
@@ -95,16 +65,14 @@ const Home = ({ token }) => {
         if (order.current.includes(arg.id)){
           index = order.current.indexOf(arg.id);
           order.current.splice(index, 1);
-          // token.token?.notifications.splice(order.current.indexOf(arg.id),1);
         }
+
         order.current.unshift(arg.id);
-        // token.token?.unshift(arg);
         
         setNotifications(notifications.set(arg.id, arg));
 
         setUpdateToken({index:index, item:arg})
         console.log('added');
-        // console.log(token.token?.notifications);
       });
     }
   }, []);
@@ -205,12 +173,35 @@ const Home = ({ token }) => {
         {accountTab && (
           <AccountTab token={token} setAccountTab={setAccountTab} />
         )}
-        {notifTab && (
+        {notifTab && (<>
           <Notification
             setTab={setNotifTab}
             order={order}
             notifications={notifications}
           />
+          <div
+        style={{
+          backgroundColor: "rgb(50,55,60)",
+          width: "350px",
+          borderRadius:'8px 8px 20px 20px',
+          position: "fixed",
+          right: matches?"55px":"50vw",
+          transform:`translate(${matches?'0':'50%'},0)`,
+          top: "461px",
+        }}
+      >
+        <Typography
+          sx={{
+            color: "rgb(220,230,240,0.7)",
+            fontSize: "12px",
+            m: "3px",
+            textAlign: "center",
+          }}
+        >
+          Notifications stay for 3 days after which they are removed
+        </Typography>
+      </div>
+      </>
         )}
       </div>
     </>

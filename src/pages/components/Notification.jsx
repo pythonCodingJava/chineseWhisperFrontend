@@ -34,12 +34,12 @@ function Notification({ notifications, setTab, order }) {
       });
   };
 
-  useEffect(() => {
-    if (initRender.current) setTab((v) => !v);
-    else {
-      initRender.current = true;
-    }
-  }, [location]);
+  // useEffect(() => {
+  //   if (initRender.current) setTab((v) => !v);
+  //   else {
+  //     initRender.current = true;
+  //   }
+  // }, [location]);
 
   useEffect(() => {
     setUrl();
@@ -53,7 +53,7 @@ function Notification({ notifications, setTab, order }) {
         position: "fixed",
         top: "70px",
         right: matches?"55px":"50vw",
-        transform:'translate(50%,0)',
+        transform:`translate(${!matches?'50%':'0'},0)`,
         width: "350px",
         height: "400px",
         overflowY: "auto",
@@ -150,26 +150,7 @@ function Notification({ notifications, setTab, order }) {
         );
       })}
 
-      <div
-        style={{
-          backgroundColor: "rgb(50,55,60)",
-          width: "350px",
-          borderRadius:'8px 8px 20px 20px',
-          position: "fixed",
-          top: "461px",
-        }}
-      >
-        <Typography
-          sx={{
-            color: "rgb(220,230,240,0.7)",
-            fontSize: "12px",
-            m: "3px",
-            textAlign: "center",
-          }}
-        >
-          Notifications stay for 3 days after which they are removed
-        </Typography>
-      </div>
+      
     </div>
   );
 }
