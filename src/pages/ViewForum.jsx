@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import { getPost } from "../utils/apiRoutes";
 import Forum from "./components/forum";
 import Comment from "./components/Comment";
@@ -9,7 +9,9 @@ import LoadingComment from "./components/LoadingComment";
 import LoadingForum from "./components/LoadingForum";
 
 function ViewForum({ token }) {
-  const { postId } = useParams();
+  const params = useParams();
+  let postId = params.postId;
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [path, setPath] = useState([]);
   const [post, setPost] = useState();
@@ -18,7 +20,15 @@ function ViewForum({ token }) {
   const [loadCmt, setLoadCmnt] = useState(false);
   const matches = useMediaQuery("(min-width:900px)");
 
+  useEffect(()=>{
+    postId = params.postId;
+    setPath(searchParams.get("path").split(","));
+    setUpdate((v)=>!v);
+  },[location])
+
   useEffect(() => {
+    
+    setPost(null);
     const func = async () => {
       await fetch(getPost, {
         method: "POST",
@@ -38,8 +48,12 @@ function ViewForum({ token }) {
         });
     };
     func();
-    setPath(searchParams.get("path").split(","));
-  }, []);
+  }, [postId]);
+
+  // useEffect(()=>{
+  //   setPath(searchParams.get("path").split(","));
+  // },[searchParams.get("path")])
+
   return (
     <>
       <div

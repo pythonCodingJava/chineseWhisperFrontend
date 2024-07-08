@@ -5,7 +5,7 @@ import { useTransition, animated } from "react-spring";
 import "../styles/Register.css";
 import { styled } from "styled-components";
 import { Field, linkStyle, boxstyle } from "../styles/formComponents.jsx";
-import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";
 import { socket } from "../socket.js";
 
 const Diiv = styled.div`
@@ -31,7 +31,7 @@ function Login({ func, register, log }) {
   const [appear, setAppear] = useState(false);
   const [visible, setVisible] = useState();
   const [logging, setLogging] = useState(false);
-  
+
   var transition;
 
   transition = useTransition(visible, {
@@ -60,10 +60,12 @@ function Login({ func, register, log }) {
       await next({ opacity: 1 });
     },
     config: {
-      mass:1, tension:700, friction:50
+      mass: 1,
+      tension: 700,
+      friction: 50,
     },
   });
-  
+
   useEffect(() => {
     if (refContainer.current && dimensions.width == 0) {
       setDimensions({
@@ -73,9 +75,7 @@ function Login({ func, register, log }) {
     } else {
       setVisible(true);
     }
-
   }, [dimensions]);
-
 
   const [invalid, setInvalid] = useState(false);
 
@@ -95,7 +95,7 @@ function Login({ func, register, log }) {
     setLogging(true);
     fetch(login, {
       method: "POST",
-      credentials:'include',
+      credentials: "include",
       body: JSON.stringify(inputs),
       headers: { "Content-Type": "application/json" },
     }).then(async (res) => {
@@ -104,12 +104,13 @@ function Login({ func, register, log }) {
         setInvalid(true);
       }
       if (res.status == 201) {
-        const dat = await res.json().then( (d)=>{
-        sessionStorage.setItem("chineseWhisperToken", JSON.stringify(d));
-        socket.emit('login', d.id)
-        func(d);
-        log();
-      })
+        const dat = await res.json().then((d) => {
+          console.log(d);
+          sessionStorage.setItem("chineseWhisperToken", JSON.stringify(d));
+          socket.emit("login", d.id);
+          func(d);
+          log();
+        });
       }
     });
   };
@@ -154,13 +155,28 @@ function Login({ func, register, log }) {
         : "hi"}
 
       <Diiv className="box" $a={appear} ref={refContainer}>
-        <HighlightOffRoundedIcon onClick={log} sx={{position:'absolute', top:'2%', right:'2%',color:'rgb(90,90,90)', '&:hover':{cursor:'pointer'}}} fontSize="large"/>
-          
+        <HighlightOffRoundedIcon
+          onClick={log}
+          sx={{
+            position: "absolute",
+            top: "2%",
+            right: "2%",
+            color: "rgb(90,90,90)",
+            "&:hover": { cursor: "pointer" },
+          }}
+          fontSize="large"
+        />
+
         <Box sx={boxstyle} ref={ref2}>
           <Typography
             variant="h3"
             align="center"
-            sx={{ color: "rgb(220,220,220)", fontWeight:'bold',marginTop:'20px',marginBottom: "20px" }}
+            sx={{
+              color: "rgb(220,220,220)",
+              fontWeight: "bold",
+              marginTop: "20px",
+              marginBottom: "20px",
+            }}
           >
             LOGIN
           </Typography>
@@ -208,7 +224,13 @@ function Login({ func, register, log }) {
             onClick={handleSubmit}
             sx={{ my: "10px", height: "45px", width: "100%" }}
           >
-            {logging?<div className="loadAnim"><div className="load">...</div></div>:"SIGN IN"}
+            {logging ? (
+              <div className="loadAnim">
+                <div className="load">...</div>
+              </div>
+            ) : (
+              "SIGN IN"
+            )}
           </Button>
         </Box>
 

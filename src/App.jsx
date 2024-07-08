@@ -7,7 +7,6 @@ function App() {
   const [token, useToken] = useState();
 
   useEffect(() => {
-    
     var storedToken = sessionStorage.getItem("chineseWhisperToken");
     if (storedToken) {
       const data = JSON.parse(storedToken);

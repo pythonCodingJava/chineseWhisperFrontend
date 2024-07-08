@@ -79,10 +79,14 @@ function Comment({ cmnt, token, path }) {
         });
     };
     func();
-    if(highlighted){
-      element.current?.scrollIntoView({behavior:'smooth'});
-    }
   }, []);
+
+  useEffect(()=>{
+    setShowReplies(path.includes(cmnt._id) && !highlighted);
+    if(highlighted){
+      element.current?.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+  },[path])
 
   return (
     <>

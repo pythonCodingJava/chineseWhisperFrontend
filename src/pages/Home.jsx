@@ -25,18 +25,86 @@ const Home = ({ token }) => {
   const [likeNotif, setLikeNotif] = useState(false);
   const [cmtNotif, setCmtNotif] = useState(false);
 
+  const [updateToken, setUpdateToken] = useState({index:-1, item:{}});
+
+  useEffect(()=>{
+    order.current = [];
+    if(token.token) token.token.notifications.forEach((item,index)=>{
+      order.current.push(item.id);
+      setNotifications(notifications.set(item.id, item));
+    })
+    setLikeNotif((v)=>!v)
+  },[token.token==null])
+
+  // useEffect(()=>{
+  //   if(initRender.current && token.token){
+  //     token.token.notifications = [];
+  //     order.current.forEach((item,index)=>{
+  //       token.setToken((prev)=>{
+  //         let temp = prev;
+  //         temp.notifications.push(item);
+  //         return temp;
+  //       })
+  //     })
+  //     sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token));
+  //   }
+  //   console.log(token.token?.notifications);
+  // },[order.current])
+
+
+  const updateSessionToken = (item,index)=>{
+    console.log(token);
+    if(token.token){
+      token.setToken((prev)=>{
+        let temp = prev;
+        temp.notifications.splice(index,1);
+        temp.notifications.unshift(item);
+        return temp;
+      })
+      // token.token.notifications.splice(index, 1);
+      // token.token.notifications.unshift(item);
+      sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
+    }
+  }
+
+  useEffect(()=>{
+    console.log(token);
+    const item = updateToken.item;
+    const index = updateToken.index;
+    if(token.token){
+      token.setToken((prev)=>{
+        let temp = prev;
+        if(index!=-1)temp.notifications.splice(index,1);
+        temp.notifications.unshift(item);
+        return temp;
+      })
+      // token.token.notifications.splice(index, 1);
+      // token.token.notifications.unshift(item);
+      sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
+    }
+  },[updateToken])
+
   useEffect(() => {
     if (!initRender.current) {
       console.log("starting");
-
       socket.on("notify", function (arg) {
-        console.log(arg);
         if(arg.type == 'like') setLikeNotif((v) => !v);
         else setCmtNotif((v)=>!v);
-        if (order.current.includes(arg.id))
-          order.current.splice(order.current.indexOf(arg.id), 1);
+        
+        let index = -1;
+        if (order.current.includes(arg.id)){
+          index = order.current.indexOf(arg.id);
+          order.current.splice(index, 1);
+          // token.token?.notifications.splice(order.current.indexOf(arg.id),1);
+        }
         order.current.unshift(arg.id);
+        // token.token?.unshift(arg);
+        
         setNotifications(notifications.set(arg.id, arg));
+
+        setUpdateToken({index:index, item:arg})
+        console.log('added');
+        // console.log(token.token?.notifications);
       });
     }
   }, []);
