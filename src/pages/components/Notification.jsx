@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import Favourite from "@mui/icons-material/Favorite";
 import { Navigate, useLocation } from "react-router-dom";
 import { getCmtPath } from "../../utils/apiRoutes";
@@ -11,6 +11,8 @@ function Notification({ notifications, setTab, order }) {
   const [url, setUrl] = useState();
   const location = useLocation();
   const initRender = useRef(false);
+
+  const matches = useMediaQuery('(min-width:500px')
 
   const handleStrings = (str) => {
     return str.length > 50 ? `${str.substring(0, 50)}..` : str;
@@ -50,7 +52,8 @@ function Notification({ notifications, setTab, order }) {
         borderRadius: "10px",
         position: "fixed",
         top: "70px",
-        right: "55px",
+        right: matches?"55px":"50vw",
+        transform:'translate(50%,0)',
         width: "350px",
         height: "400px",
         overflowY: "auto",
