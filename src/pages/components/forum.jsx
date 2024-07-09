@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { likeURL, addCmnt } from "../../utils/apiRoutes";
+import { likeURL, addCmnt, deleteURL } from "../../utils/apiRoutes";
 import {
   Typography,
   TextField,
@@ -11,13 +11,19 @@ import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import { Navigate } from "react-router-dom";
 import { processTime } from "../../utils/utilities";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
+import "../../styles/forum.css";
 
-function Forum({ item, token, updateWindow, setLoadCmnt }) {
+function Forum({ item, token, deleteFunc, updateWindow, setLoadCmnt }) {
   const matches = useMediaQuery("(min-width:900px)");
   const [redirect, setRedirect] = useState(false);
   const [update, setUpdate] = useState(false);
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
+
+  const [openEditMenu, setOpenEditMenu] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   let like = 0;
 
@@ -58,7 +64,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
 
   const handleclick = async (item) => {
     if (like == 0) {
-      if(!replying) setRedirect(true);
+      if (!replying) setRedirect(true);
     } else {
       if (like == 1) {
         console.log("like");
@@ -105,6 +111,30 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
           postComment();
         }
       }
+      if (like == 3) {
+        setOpenEditMenu((v) => !v);
+      }
+      if (like == 4) {
+        await fetch(deleteURL, {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify({
+            id: item._id,
+            type: "Post",
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((res) => {
+          if (res.status == 201) {
+            deleteFunc(item);
+          }
+        });
+      }
+      if (like == 5) {
+        setDeleting(true);
+        console.log(deleting);
+      }
       like = 0;
     }
   };
@@ -113,6 +143,7 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
       {redirect ? <Navigate to={`/forum/${item._id}?path=`} /> : <></>}
       <Box
         sx={{
+          position: "relative",
           color: "white",
           backgroundColor: "rgb(20,25,28)",
           borderRadius: "15px",
@@ -120,14 +151,16 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
           padding: "10px",
           display: "flex",
           flexDirection: "column",
-          "&:hover": {
-            backgroundColor: "rgb(25,30,35)",
-            cursor: "pointer",
-          },
+          "&:hover": !deleting
+            ? {
+                backgroundColor: "rgb(25,30,35)",
+                cursor: "pointer",
+              }
+            : {},
         }}
         style={matches ? { width: "900px" } : { width: "calc(100vw - 50px)" }}
         onClick={() => {
-           handleclick(item);
+          if (!deleting) handleclick(item);
         }}
       >
         <div
@@ -323,6 +356,124 @@ function Forum({ item, token, updateWindow, setLoadCmnt }) {
           </>
         ) : (
           <></>
+        )}
+        <Box
+          sx={{
+            position: "absolute",
+            right: "10px",
+            top: "5px",
+            bgcolor: openEditMenu ? "rgb(10,15,20)" : "",
+            p: "5px",
+            borderRadius: "25px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {item.createdBy.Username == token?.Username && (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  float: "right",
+                  bgcolor: openEditMenu ? "rgb(30,35,40)" : "rgba(20,25,30,0)",
+                  "&:hover": { bgcolor: "rgba(220,230,240,0.2)" },
+                  borderRadius: "50%",
+                  height: "35px",
+                  width: "35px",
+                }}
+                onClick={function () {
+                  like = 3;
+                }}
+              >
+                <MoreHorizIcon sx={{ p: "3px", color: "rgb(200,210,220)" }} />
+              </Box>
+              {openEditMenu && (
+                <Box
+                  className="slideAnim"
+                  sx={{
+                    display: "flex",
+                    marginTop: "10px",
+                    borderRadius: "50%",
+                    "&:hover": { bgcolor: "rgba(250,90,90,0.3)" },
+                    justifyContent: "center",
+                  }}
+                  onClick={function () {
+                    like = 5;
+                  }}
+                >
+                  <DeleteRoundedIcon
+                    sx={{ color: "rgb(210,220,230)", p: "5px" }}
+                  />
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
+        {deleting && (
+          <div
+            style={{
+              backgroundColor: "rgba(0,0,0,0.4)",
+              borderRadius: "15px",
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: "0px",
+              left: "0px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography sx={{ fontWeight: "600" }}>Are you sure?</Typography>
+            <div
+              style={{
+                display: "flex",
+                margin: "7px",
+                flexDirection: "row",
+                width: "100px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "rgb(200,150,150)",
+                  "&:hover": {
+                    bgcolor: "rgba(200,50,50,0.8)",
+                    cursor: "pointer",
+                    color: "white",
+                  },
+                  px: "5px",
+                  borderRadius: "10px",
+                  transition: "0.2s",
+                }}
+                onClick={function(){
+                  like = 4;
+                  handleclick(item);
+                }}
+              >
+                Yes
+              </Typography>
+              <Typography
+                sx={{
+                  color: "rgb(150,150,200)",
+                  "&:hover": {
+                    bgcolor: "rgba(50,50,200,0.8)",
+                    cursor: "pointer",
+                    color: "white",
+                  },
+                  px: "5px",
+                  borderRadius: "10px",
+                  marginLeft:'auto',
+                  transition: "0.2s",
+                }}
+                onClick={function(){setOpenEditMenu(false);setDeleting(false);}}
+              >
+                No
+              </Typography>
+            </div>
+          </div>
         )}
       </Box>
     </>

@@ -6,13 +6,20 @@ import {
   TextField,
   useMediaQuery,
 } from "@mui/material";
-import { addCmnt, getReplies, likeCmntURL } from "../../utils/apiRoutes";
+import {
+  addCmnt,
+  deleteURL,
+  getReplies,
+  likeCmntURL,
+} from "../../utils/apiRoutes";
 import Favourite from "@mui/icons-material/Favorite";
 import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
 import LoadingComment from "./LoadingComment";
 import { processTime } from "../../utils/utilities";
+import MoreHoriz from "@mui/icons-material/MoreHoriz";
+import DeleteRounded from "@mui/icons-material/DeleteRounded";
 
-function Comment({ cmnt, token, path }) {
+function Comment({ cmnt, token, deleteFunc, path }) {
   const [replies, setReplies] = useState();
   const [update, setUpdate] = useState();
   const [replying, setReplying] = useState(false);
@@ -21,9 +28,22 @@ function Comment({ cmnt, token, path }) {
   const [loadCmt, setLoadCmt] = useState(false);
   const element = useRef(null);
 
-  const highlighted = path.indexOf(cmnt._id) == path.length-1;
-  const [showReplies, setShowReplies] = useState(path.includes(cmnt._id) && !highlighted);
-  
+  const highlighted = path.indexOf(cmnt._id) == path.length - 1;
+  const [showReplies, setShowReplies] = useState(
+    path.includes(cmnt._id) && !highlighted
+  );
+
+  const [openEditMenu, setOpenEditMenu] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const deletefun = (item) => {
+    setReplies(
+      replies.filter((i) => {
+        return i._id != item._id;
+      })
+    );
+  };
+
   const postComment = async () => {
     setLoadCmt(true);
     await fetch(addCmnt, {
@@ -81,12 +101,12 @@ function Comment({ cmnt, token, path }) {
     func();
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     setShowReplies(path.includes(cmnt._id) && !highlighted);
-    if(highlighted){
-      element.current?.scrollIntoView({behavior:'smooth', block:'center'});
+    if (highlighted) {
+      element.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  },[path])
+  }, [path]);
 
   return (
     <>
@@ -95,11 +115,24 @@ function Comment({ cmnt, token, path }) {
           display: "flex",
           width: "inherit",
           marginRight: "auto",
+          position: "relative",
           flexDirection: "row",
-          backgroundColor: highlighted?'rgba(255,255,255,0.05)':''
+          // backgroundColor: highlighted ? "rgba(255,255,255,0.05)" : "",
         }}
         ref={element}
       >
+        {highlighted && <div
+          style={{
+            position: "absolute",
+            borderRadius: "15px",
+            top: "0px",
+            left: "0px",
+            backgroundColor: "rgba(255,255,255,0.05)",
+            width: "100%",
+            height: "100%",
+          }}
+          className="highlight"
+        />}
         <div
           style={{
             width: "25px",
@@ -300,11 +333,145 @@ function Comment({ cmnt, token, path }) {
             )}
           </div>
         </div>
+
+        <Box
+          sx={{
+            position: "absolute",
+            right: "10px",
+            top: "0px",
+            bgcolor: openEditMenu ? "rgb(10,15,20)" : "",
+            p: "5px",
+            borderRadius: "25px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {cmnt.from.Username == token?.Username && (
+            <>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: openEditMenu ? "rgb(30,35,40)" : "rgba(20,25,30,0)",
+                  "&:hover": { bgcolor: "rgba(220,230,240,0.2)" },
+                  borderRadius: "50%",
+                  height: "35px",
+                  width: "35px",
+                }}
+                onClick={function () {
+                  setOpenEditMenu((v) => !v);
+                }}
+              >
+                <MoreHoriz sx={{ p: "3px", color: "rgb(200,210,220)" }} />
+              </Box>
+              {openEditMenu && (
+                <Box
+                  className="slideAnim"
+                  sx={{
+                    display: "flex",
+                    marginTop: "10px",
+                    borderRadius: "50%",
+                    "&:hover": { bgcolor: "rgba(250,90,90,0.3)" },
+                    justifyContent: "center",
+                  }}
+                  onClick={function () {
+                    setDeleting(true);
+                  }}
+                >
+                  <DeleteRounded sx={{ color: "rgb(210,220,230)", p: "5px" }} />
+                </Box>
+              )}
+            </>
+          )}
+        </Box>
+        {deleting && (
+          <div
+            style={{
+              backgroundColor: "rgba(0,0,0,0.4)",
+              borderRadius: "15px",
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              top: "0px",
+              left: "0px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Typography sx={{ fontWeight: "600", color: "rgb(220,230,240)" }}>
+              Are you sure?
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                margin: "7px",
+                flexDirection: "row",
+                width: "100px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "rgb(200,150,150)",
+                  "&:hover": {
+                    bgcolor: "rgba(200,50,50,0.8)",
+                    cursor: "pointer",
+                    color: "white",
+                  },
+                  px: "5px",
+                  borderRadius: "10px",
+                  transition: "0.2s",
+                }}
+                onClick={async function () {
+                  await fetch(deleteURL, {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify({
+                      id: cmnt._id,
+                      type: "Comment",
+                    }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }).then((res) => {
+                    if (res.status == 201) {
+                      deleteFunc(cmnt);
+                    }
+                  });
+                }}
+              >
+                Yes
+              </Typography>
+              <Typography
+                sx={{
+                  color: "rgb(150,150,200)",
+                  "&:hover": {
+                    bgcolor: "rgba(50,50,200,0.8)",
+                    cursor: "pointer",
+                    color: "white",
+                  },
+                  px: "5px",
+                  borderRadius: "10px",
+                  marginLeft: "auto",
+                  transition: "0.2s",
+                }}
+                onClick={function () {
+                  setOpenEditMenu(false);
+                  setDeleting(false);
+                }}
+              >
+                No
+              </Typography>
+            </div>
+          </div>
+        )}
       </div>
       {replying ? (
         <>
           <TextField
-              autoFocus
+            autoFocus
             sx={{
               width: "calc(100% - 80px)",
             }}
@@ -364,7 +531,13 @@ function Comment({ cmnt, token, path }) {
         <>
           {replies.map((cmnt, index) => {
             return (
-              <Comment key={index} path={path} token={token} cmnt={cmnt} />
+              <Comment
+                key={cmnt._id}
+                deleteFunc={deletefun}
+                path={path}
+                token={token}
+                cmnt={cmnt}
+              />
             );
           })}
         </>

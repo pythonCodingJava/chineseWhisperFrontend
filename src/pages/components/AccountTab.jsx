@@ -24,7 +24,6 @@ function AccountTab({ token, setAccountTab }) {
         "Content-Type": "application/json",
       },
     }).then((res) => {
-      console.log(res);
       if (res.status == 201) {
         token.setToken(null);
         sessionStorage.removeItem("chineseWhisperToken");

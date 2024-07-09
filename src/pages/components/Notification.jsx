@@ -34,12 +34,12 @@ function Notification({ notifications, setTab, order }) {
       });
   };
 
-  // useEffect(() => {
-  //   if (initRender.current) setTab((v) => !v);
-  //   else {
-  //     initRender.current = true;
-  //   }
-  // }, [location]);
+  useEffect(() => {
+    if (initRender.current) setTab((v) => !v);
+    else {
+      initRender.current = true;
+    }
+  }, [location]);
 
   useEffect(() => {
     setUrl();

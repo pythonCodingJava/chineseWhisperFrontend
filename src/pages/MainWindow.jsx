@@ -1,19 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
-import { content, likeURL } from "../utils/apiRoutes";
-import { Typography, useMediaQuery, Box } from "@mui/material";
-import Favourite from "@mui/icons-material/Favorite";
-import FavouriteBorder from "@mui/icons-material/FavoriteBorder";
+import React from "react";
 import Forum from "./components/forum";
 
-function MainWindow({ data, token }) {
-  const [likedForums, setLikedForums] = useState([]);
+function MainWindow({ data, setData, token }) {
 
-  useEffect(() => {
-    if (token) {
-      setLikedForums(token.liked);
-    }
-  }, [token]);
-
+  const deletePost = (item)=>{
+    setData(data.filter((i)=>{
+      return i._id != item._id; 
+    }))
+  }
   return (
     <>
       <title>Chinese Whisper</title>
@@ -35,7 +29,7 @@ function MainWindow({ data, token }) {
             }}
           >
             {data.map((item, index) => {
-              return <Forum key={index} item={item} updateWindow={function(){}} setLoadCmnt={function(){}} token={token} />;
+              return <Forum key={item._id} deleteFunc={deletePost} item={item} updateWindow={function(){}} setLoadCmnt={function(){}} token={token} />;
             })}
           </div>
         </div>

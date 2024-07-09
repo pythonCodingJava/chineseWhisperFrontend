@@ -1,6 +1,5 @@
 import { React, useState, useEffect, useRef } from "react";
 import {useTransition,animated} from 'react-spring';
-import { Link, redirect, Navigate } from "react-router-dom";
 import "../styles/Register.css";
 import {styled} from 'styled-components';
 import { Box, Button, Typography } from "@mui/material";

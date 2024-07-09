@@ -11,3 +11,4 @@ export const getReplies = `${host}content/replies`
 export const likeCmntURL = `${host}content/action/likecmnt`;
 export const addCmnt = `${host}content/action/comment`;
 export const logoutURL = `${host}content/action/logout`;
+export const deleteURL = `${host}content/action/delete`;

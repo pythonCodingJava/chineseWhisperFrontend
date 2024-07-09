@@ -20,14 +20,18 @@ function ViewForum({ token }) {
   const [loadCmt, setLoadCmnt] = useState(false);
   const matches = useMediaQuery("(min-width:900px)");
 
-  useEffect(()=>{
+  // useEffect(()=>{
+  // },[location])
+
+  const deletefun = (cmt)=>{
+    post.comments.splice(post.comments.indexOf(cmt), 1);
+    setUpdate((v)=>!v);
+  }
+
+  useEffect(() => {
     postId = params.postId;
     setPath(searchParams.get("path").split(","));
     setUpdate((v)=>!v);
-  },[location])
-
-  useEffect(() => {
-    
     setPost(null);
     const func = async () => {
       await fetch(getPost, {
@@ -48,7 +52,7 @@ function ViewForum({ token }) {
         });
     };
     func();
-  }, [postId]);
+  }, [location]);
 
   // useEffect(()=>{
   //   setPath(searchParams.get("path").split(","));
@@ -93,10 +97,11 @@ function ViewForum({ token }) {
                 }}
               >
                 {loadCmt && <LoadingComment tier={1} />}
-                {post.comments.map((cmnt, index) => {
+                {post.comments.map((cmnt) => {
                   return (
                     <Comment
-                      key={index}
+                      key={cmnt._id}
+                      deleteFunc={deletefun}
                       path={path}
                       token={token}
                       cmnt={cmnt}

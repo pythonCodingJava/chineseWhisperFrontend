@@ -26,53 +26,51 @@ const Home = ({ token }) => {
   const [likeNotif, setLikeNotif] = useState(false);
   const [cmtNotif, setCmtNotif] = useState(false);
 
-  const matches = useMediaQuery('(min-width:500px)')
+  const matches = useMediaQuery("(min-width:500px)");
 
-  const [updateToken, setUpdateToken] = useState({index:-1, item:{}});
+  const [updateToken, setUpdateToken] = useState({ index: -1, item: {} });
+
+  useEffect(() => {
+    order.current = [];
+    if (token.token)
+      token.token.notifications.forEach((item, index) => {
+        order.current.push(item.id);
+        setNotifications(notifications.set(item.id, item));
+      });
+    setLikeNotif((v) => !v);
+  }, [token.token == null]);
 
   useEffect(()=>{
-    order.current = [];
-    if(token.token) token.token.notifications.forEach((item,index)=>{
-      order.current.push(item.id);
-      setNotifications(notifications.set(item.id, item));
-    })
-    setLikeNotif((v)=>!v)
-  },[token.token==null])
-
-  // useEffect(()=>{
-  //   console.log(token);
-  //   const item = updateToken.item;
-  //   const index = updateToken.index;
-  //   if(token.token){
-  //     token.setToken((prev)=>{
-  //       let temp = prev;
-  //       if(index!=-1)temp.notifications.splice(index,1);
-  //       temp.notifications.unshift(item);
-  //       return temp;
-  //     })
-  //     sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
-  //   }
-  // },[updateToken])
+    const item = updateToken.item;
+    const index = updateToken.index;
+    if(token.token && initRender.current){
+      token.setToken((prev)=>{
+        let temp = prev;
+        if(index!=-1)temp.notifications.splice(index,1);
+        temp.notifications.unshift(item);
+        return temp;
+      })
+      sessionStorage.setItem('chineseWhisperToken',JSON.stringify(token.token))
+    }
+  },[updateToken])
 
   useEffect(() => {
     if (!initRender.current) {
-      console.log("starting");
       socket.on("notify", function (arg) {
-        if(arg.type == 'like') setLikeNotif((v) => !v);
-        else setCmtNotif((v)=>!v);
-        
+        if (arg.type == "like") setLikeNotif((v) => !v);
+        else setCmtNotif((v) => !v);
+
         let index = -1;
-        if (order.current.includes(arg.id)){
+        if (order.current.includes(arg.id)) {
           index = order.current.indexOf(arg.id);
           order.current.splice(index, 1);
         }
 
         order.current.unshift(arg.id);
-        
+
         setNotifications(notifications.set(arg.id, arg));
 
-        setUpdateToken({index:index, item:arg})
-        console.log('added');
+        setUpdateToken({ index: index, item: arg });
       });
     }
   }, []);
@@ -98,11 +96,12 @@ const Home = ({ token }) => {
         setData([...dat.data, ...data]);
       }
     };
+
     if (initRender.current || window.location.pathname == "/") {
       setLoading(true);
-      console.log("retrieving");
       retrieved();
-    } else {
+    }
+    if(!initRender.current){
       initRender.current = true;
     }
   }, [retrieve]);
@@ -113,7 +112,7 @@ const Home = ({ token }) => {
         <Routes>
           <Route
             path="/"
-            element={<MainWindow data={data} token={token.token}></MainWindow>}
+            element={<MainWindow data={data} setData={setData} token={token.token}></MainWindow>}
           />
           <Route
             path="/add"
@@ -173,35 +172,36 @@ const Home = ({ token }) => {
         {accountTab && (
           <AccountTab token={token} setAccountTab={setAccountTab} />
         )}
-        {notifTab && (<>
-          <Notification
-            setTab={setNotifTab}
-            order={order}
-            notifications={notifications}
-          />
-          <div
-        style={{
-          backgroundColor: "rgb(50,55,60)",
-          width: "350px",
-          borderRadius:'8px 8px 20px 20px',
-          position: "fixed",
-          right: matches?"55px":"50vw",
-          transform:`translate(${matches?'0':'50%'},0)`,
-          top: "461px",
-        }}
-      >
-        <Typography
-          sx={{
-            color: "rgb(220,230,240,0.7)",
-            fontSize: "12px",
-            m: "3px",
-            textAlign: "center",
-          }}
-        >
-          Notifications stay for 3 days after which they are removed
-        </Typography>
-      </div>
-      </>
+        {notifTab && (
+          <>
+            <Notification
+              setTab={setNotifTab}
+              order={order}
+              notifications={notifications}
+            />
+            <div
+              style={{
+                backgroundColor: "rgb(50,55,60)",
+                width: "350px",
+                borderRadius: "8px 8px 20px 20px",
+                position: "fixed",
+                right: matches ? "55px" : "50vw",
+                transform: `translate(${matches ? "0" : "50%"},0)`,
+                top: "461px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: "rgb(220,230,240,0.7)",
+                  fontSize: "12px",
+                  m: "3px",
+                  textAlign: "center",
+                }}
+              >
+                Notifications stay for 3 days after which they are removed
+              </Typography>
+            </div>
+          </>
         )}
       </div>
     </>
