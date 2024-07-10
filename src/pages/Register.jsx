@@ -195,8 +195,8 @@ function Register({ func , login}) {
             error={valid["uname"]}
             helperText={valid["uname"] ? "Username already exists" : ""}
           />
-          1
-          <Field
+          {/* 1 */}
+          {/* <Field
             type="textbox"
             name="email"
             value={inputs["email"]}
@@ -210,7 +210,7 @@ function Register({ func , login}) {
                   : "Invalid Student ID"
                 : ""
             }
-          />
+          /> */}
           1
           <Field
             type="password"
