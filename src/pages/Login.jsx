@@ -2,7 +2,6 @@ import { React, useRef, useEffect, useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { login } from "../utils/apiRoutes";
 import { useTransition, animated } from "react-spring";
-import "../styles/Register.css";
 import { styled } from "styled-components";
 import { Field, linkStyle, boxstyle } from "../styles/formComponents.jsx";
 import HighlightOffRoundedIcon from "@mui/icons-material/HighlightOffRounded";

@@ -1,14 +1,16 @@
-import { React, useEffect, useState, useRef } from "react";
+import { React, useEffect, useState, useRef, lazy, Suspense } from "react";
 import Navbar from "./components/Navbar";
-import AccountTab from "./components/AccountTab";
 import { Routes, Route } from "react-router-dom";
 import MainWindow from "./MainWindow";
 import AddForum from "./addForum";
 import ViewForum from "./ViewForum";
 import { content } from "../utils/apiRoutes";
-import Notification from "./components/Notification";
 import { socket } from "../socket";
 import { Typography, useMediaQuery } from "@mui/material";
+import "../styles/Register.css";
+import AccountTab from "./components/AccountTab";
+
+const Notification =lazy(()=>import( "./components/Notification"));
 
 const Home = ({ token }) => {
   const [accountTab, setAccountTab] = useState(false);
@@ -174,6 +176,7 @@ const Home = ({ token }) => {
         )}
         {notifTab && (
           <>
+            <Suspense>
             <Notification
               setTab={setNotifTab}
               order={order}
@@ -201,6 +204,7 @@ const Home = ({ token }) => {
                 Notifications stay for 3 days after which they are removed
               </Typography>
             </div>
+            </Suspense>
           </>
         )}
       </div>

@@ -1,23 +1,21 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import {
   Box,
   Button,
-  InputAdornment,
-  TextField,
   Typography,
   useMediaQuery,
 } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import Add from "@mui/icons-material/Add";
-import Login from "../Login";
-import Register from "../Register";
 import Account from "./Account";
 import { Link, Navigate } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
-import Notification from "./Notification";
 import Favorite from "@mui/icons-material/Favorite";
 import ModeComment from "@mui/icons-material/ModeComment";
+
+const Login = lazy(()=>import("../Login"));
+const Register = lazy(()=>import("../Register"));
 
 const Diiv = styled.div`
   transition: opacity 0.5s;
@@ -291,21 +289,25 @@ function Navbar({
       )}
 
       {register ? (
-        <Register
+        <Suspense>
+          <Register
           func={setRegister}
           login={() => {
             setRegister(false);
             setLogin(false);
           }}
         />
+        </Suspense>
       ) : login ? (
-        <Login
+        <Suspense>
+          <Login
           func={token.setToken}
           log={function () {
             setLogin(false);
           }}
           register={setRegister}
         />
+        </Suspense>
       ) : (
         <></>
       )}
