@@ -21,6 +21,7 @@ const Home = ({ token }) => {
   const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
   const initRender = useRef(false);
 
   const [notifications, setNotifications] = useState(new Map());
@@ -97,6 +98,9 @@ const Home = ({ token }) => {
         dat.data.pop();
         setData([...dat.data, ...data]);
       }
+      if(data.length+dat.data.length >= dat.num) {
+        setHasMore(false);
+      }
     };
 
     if (initRender.current || window.location.pathname == "/") {
@@ -114,7 +118,7 @@ const Home = ({ token }) => {
         <Routes>
           <Route
             path="/"
-            element={<MainWindow data={data} setData={setData} token={token.token}></MainWindow>}
+            element={<MainWindow data={data} hasMore={hasMore} setHasMore={setHasMore} setData={setData} token={token.token}></MainWindow>}
           />
           <Route
             path="/add"

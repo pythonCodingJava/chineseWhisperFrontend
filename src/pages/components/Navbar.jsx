@@ -67,6 +67,7 @@ function Navbar({
 
   useEffect(() => {
     if (loading) {
+      setRedirect(true);
       ref.current.continuousStart();
     } else {
       ref.current.complete();
@@ -102,8 +103,6 @@ function Navbar({
           sx={{ "&:hover": { cursor: "pointer" } }}
           onClick={function () {
             setRetrieve((v) => !v);
-
-            setRedirect(true);
           }}
         >
           <div

@@ -23,15 +23,15 @@ function ViewForum({ token }) {
   // useEffect(()=>{
   // },[location])
 
-  const deletefun = (cmt)=>{
+  const deletefun = (cmt) => {
     post.comments.splice(post.comments.indexOf(cmt), 1);
-    setUpdate((v)=>!v);
-  }
+    setUpdate((v) => !v);
+  };
 
   useEffect(() => {
     postId = params.postId;
     setPath(searchParams.get("path").split(","));
-    setUpdate((v)=>!v);
+    setUpdate((v) => !v);
     setPost(null);
     const func = async () => {
       await fetch(getPost, {
@@ -60,25 +60,25 @@ function ViewForum({ token }) {
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            padding: "10px",
-            position: "absolute",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          {post != null ? (
-            <>
-              <title>{post.title}</title>
+      {post != null ? (
+        <>
+          <title>{post.title}</title>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+            }}
+          >
+            <div
+              style={{
+                padding: "10px",
+                position: "absolute",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
               <Forum
                 item={post}
                 setLoadCmnt={setLoadCmnt}
@@ -109,14 +109,14 @@ function ViewForum({ token }) {
                   );
                 })}
               </div>
-            </>
-          ) : failed ? (
-            <div style={{ color: "white" }}>404 not found</div>
-          ) : (
-            <LoadingForum />
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      ) : failed ? (
+        <div style={{ color: "white" }}>404 not found</div>
+      ) : (
+        <LoadingForum />
+      )}
     </>
   );
 }

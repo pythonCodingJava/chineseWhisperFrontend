@@ -5,7 +5,25 @@ function LoadingForum() {
     
   const matches = useMediaQuery("(min-width:900px)");
   return (
-    <div>
+    <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            position:'relative'
+          }}
+          className='container'
+        >
+          <div
+            style={{
+              padding: "10px",
+              position: "absolute",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+            className='row'
+          >
               <Box
                 className='blink'
                 sx={{
@@ -111,6 +129,7 @@ function LoadingForum() {
                   ></Box>
                 </div>
               </Box>
+              </div>
             </div>
   )
 }
